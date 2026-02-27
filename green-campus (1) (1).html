@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yeşil Kampüs — Karbon Ayak İzi Takip</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --g900: #0D3B1E; --g800: #1B5E20; --g700: #2E7D32; --g600: #388E3C;
+    --g500: #4CAF50; --g400: #66BB6A; --g300: #81C784; --g200: #A5D6A7;
+    --g100: #C8E6C9; --g50: #E8F5E9;
+    --orange: #FF9800; --orange-l: #FFB74D;
+    --red: #EF5350; --red-l: #EF9A9A;
+    --blue: #42A5F5; --blue-l: #90CAF9;
+    --purple: #AB47BC; --teal: #26A69A;
+    --yellow: #FFEE58; --gold: #FFD700;
+    --bg: #F0F7F0; --card: #FFFFFF; --dark: #0A1F0D;
+    --text: #1A2E1A; --text2: #5A6F5A; --text3: #8A9F8A;
+    --shadow: 0 2px 16px rgba(27,94,32,0.10);
+    --shadow-lg: 0 8px 32px rgba(27,94,32,0.15);
+    --r: 16px; --rs: 10px; --rl: 24px;
+    --font: 'DM Sans', sans-serif;
+    --display: 'Fraunces', serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--font);
+    background: #D8EDD8;
+    min-height: 100vh;
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 48px;
+  }
+
+  /* PAGE WRAPPER */
+  .page {
+    width: 390px;
+    background: var(--bg);
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.2), 0 4px 20px rgba(0,0,0,0.1);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .page-label {
+    font-family: var(--display);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--g800);
+    text-align: center;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+    opacity: 0.7;
+  }
+
+  /* STATUS BAR */
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background: var(--card);
+    border-bottom: 1px solid var(--g50);
+    font-size: 11px;
+    color: var(--text2);
+    font-weight: 600;
+  }
+
+  /* SCROLL AREA */
+  .scroll-area {
+    padding: 16px 14px 90px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    overflow: hidden;
+  }
+
+  /* BOTTOM NAV */
+  .bottom-nav {
+    display: flex;
+    align-items: center;
+    padding: 8px 8px 14px;
+    background: var(--card);
+    border-top: 1px solid var(--g50);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+  .tab-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 8px 4px;
+    border-radius: var(--rs);
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text2);
+    background: transparent;
+    cursor: pointer;
+  }
+  .tab-btn.active { background: var(--g800); color: #fff; font-weight: 700; }
+  .tab-btn span:first-child { font-size: 18px; }
+  .fab {
+    width: 52px; height: 52px;
+    border-radius: 26px;
+    background: linear-gradient(135deg, var(--g600), var(--g800));
+    color: #fff;
+    font-size: 24px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 14px rgba(76,175,80,0.4);
+    margin-top: -20px;
+    flex-shrink: 0;
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--card);
+    border-radius: var(--r);
+    padding: 16px;
+    box-shadow: var(--shadow);
+  }
+  .card-dark {
+    background: linear-gradient(135deg, var(--g900), var(--g800));
+    color: #fff;
+    border-radius: var(--r);
+    padding: 16px;
+  }
+  .card-grad {
+    background: linear-gradient(135deg, #FFF3E0, #E8F5E9);
+    border-radius: var(--r);
+    padding: 16px;
+  }
+
+  /* SECTION TITLE */
+  .sec-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .sec-title h3 { font-family: var(--display); font-size: 15px; font-weight: 700; color: var(--text); }
+  .sec-title p { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+  /* PROGRESS BAR */
+  .progress-wrap { margin-bottom: 8px; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text2); margin-bottom: 4px; }
+  .progress-label strong { font-weight: 700; color: var(--text); }
+  .progress-track { height: 8px; background: var(--g50); border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
+
+  /* GRID 2 */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+
+  /* STAT MINI */
+  .stat-mini { padding: 10px; border-radius: 10px; text-align: center; }
+  .stat-mini .icon { font-size: 18px; }
+  .stat-mini .value { font-family: var(--display); font-size: 15px; font-weight: 700; }
+  .stat-mini .lbl { font-size: 9px; color: var(--text2); }
+
+  /* XP / LEVEL BADGE */
+  .level-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 12px; border-radius: 20px;
+    font-size: 11px; font-weight: 700;
+  }
+
+  /* LIST ROW */
+  .row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--g50); }
+  .row:last-child { border-bottom: none; }
+
+  /* BADGE GRID */
+  .badge-item {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 8px 4px; border-radius: 10px; text-align: center;
+  }
+  .badge-item .badge-icon { font-size: 24px; }
+  .badge-item .badge-name { font-size: 7px; color: var(--text2); margin-top: 3px; line-height: 1.2; }
+
+  /* CHART BARS */
+  .bar-chart { display: flex; align-items: flex-end; gap: 4px; padding: 0 4px; }
+  .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .bar-stack { width: 100%; max-width: 32px; border-radius: 6px 6px 2px 2px; overflow: hidden; }
+  .bar-seg { transition: height 0.6s ease; }
+  .bar-label { font-size: 9px; color: var(--text2); }
+  .bar-total { font-size: 8px; color: var(--text2); font-weight: 600; }
+
+  /* HOURLY CHART */
+  .hourly-chart { display: flex; align-items: flex-end; gap: 2px; height: 100px; padding: 0 2px; }
+  .hourly-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 1px; }
+  .hourly-bar { width: 100%; border-radius: 3px 3px 0 0; opacity: 0.75; }
+  .hourly-lbl { font-size: 7px; color: var(--text2); }
+
+  /* SVG CHART AREA */
+  .chart-svg { width: 100%; overflow: visible; display: block; }
+
+  /* EXCHANGE */
+  .exchange-price { font-family: var(--display); font-size: 28px; font-weight: 900; color: var(--g700); }
+  .exchange-up { font-size: 11px; color: var(--g500); font-weight: 600; }
+
+  /* EMOTION */
+  .emotion-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--g100); }
+  .emotion-row:last-child { border-bottom: none; }
+
+  /* DNA VIZ */
+  .dna-container { position: relative; width: 220px; height: 220px; margin: 0 auto; }
+
+  /* TWIN COMPARE */
+  .twin-col {
+    flex: 1; border-radius: var(--rs); padding: 14px; text-align: center;
+  }
+  .twin-col .twin-num { font-family: var(--display); font-size: 26px; font-weight: 900; }
+  .twin-col .twin-lbl { font-size: 10px; color: var(--text2); }
+
+  /* CONTRACTS */
+  .contract-card { border-radius: var(--r); padding: 14px; background: var(--card); box-shadow: var(--shadow); }
+
+  /* SYMPHONY */
+  .note-bar { width: 28px; border-radius: 4px 4px 2px 2px; transition: height 0.5s ease; }
+
+  /* BIO */
+  .bio-stat { border-radius: 10px; padding: 10px; text-align: center; background: rgba(38,166,154,0.08); }
+
+  /* MODAL BOTTOM SHEET */
+  .modal-sheet {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: var(--card); border-radius: 24px 24px 0 0; padding: 20px;
+    z-index: 10;
+  }
+  .modal-drag { width: 40px; height: 4px; background: var(--g100); border-radius: 2px; margin: 0 auto 16px; }
+
+  /* EMISSION TYPE BTN */
+  .etype-btn {
+    padding: 12px; border-radius: var(--rs); border: 1px solid var(--g100);
+    background: var(--card); text-align: left; cursor: pointer;
+  }
+  .etype-btn .ename { font-size: 13px; font-weight: 600; color: var(--text); }
+  .etype-btn .efactor { font-size: 9px; color: var(--text2); }
+
+  /* INPUT */
+  .big-input {
+    width: 100%; padding: 14px; border-radius: var(--rs);
+    border: 2px solid var(--g200); font-size: 16px; text-align: center;
+    font-family: var(--font); outline: none; color: var(--text);
+  }
+
+  /* BTN */
+  .btn-primary {
+    width: 100%; padding: 13px; border-radius: var(--r); border: none;
+    background: var(--g700); color: #fff; font-weight: 700; font-size: 14px;
+    font-family: var(--font); cursor: pointer;
+  }
+  .btn-outline {
+    width: 100%; padding: 12px; border-radius: var(--r);
+    border: 2px solid var(--g700); background: transparent;
+    color: var(--g700); font-weight: 700; font-size: 14px;
+    font-family: var(--font); cursor: pointer;
+  }
+  .btn-dashed {
+    width: 100%; padding: 12px; border-radius: var(--r);
+    border: 2px dashed var(--g500); background: rgba(76,175,80,0.05);
+    color: var(--g700); font-weight: 700; font-size: 13px;
+    font-family: var(--font); cursor: pointer;
+  }
+
+  /* PULSE ANIMATION */
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.7;transform:scale(1.06)} }
+  @keyframes breathe { 0%,100%{r:55} 50%{r:70} }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+  .pulse { animation: pulse 3s ease-in-out infinite; }
+  .float { animation: float 3s ease-in-out infinite; }
+
+  /* GLOW CARD */
+  .card-glow-green { box-shadow: 0 0 22px rgba(76,175,80,0.25), var(--shadow); }
+  .card-glow-purple { box-shadow: 0 0 22px rgba(171,71,188,0.25), var(--shadow); }
+  .card-glow-blue { box-shadow: 0 0 22px rgba(66,165,245,0.25), var(--shadow); }
+  .card-glow-gold { box-shadow: 0 0 22px rgba(255,215,0,0.25), var(--shadow); }
+
+  /* LEVEL COLORS */
+  .lvl-bar-g { background: linear-gradient(90deg, #A5D6A7, #81C784); }
+  .lvl-bar-m { background: linear-gradient(90deg, #66BB6A, #4CAF50); }
+  .lvl-bar-o { background: linear-gradient(90deg, #FF9800, #FFB74D); }
+  .lvl-bar-r { background: linear-gradient(90deg, #EF5350, #EF9A9A); }
+
+  /* LEADERBOARD */
+  .lb-row { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; }
+  .lb-row.me { background: rgba(76,175,80,0.1); }
+
+  /* BACK BUTTON */
+  .back-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text); padding: 0; line-height: 1; }
+
+  /* CONTRACTS */
+  .ctr-card { background: var(--card); border-radius: var(--r); padding: 14px; box-shadow: var(--shadow); }
+
+  /* MEMORY */
+  .mem-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--g50); }
+  .mem-row:last-child { border-bottom: none; }
+  .conf-chip { font-size: 9px; border-radius: 8px; padding: 2px 6px; font-weight: 600; }
+
+  /* SCENARIO CARDS */
+  .scenario-card { padding: 14px; border-radius: var(--r); text-align: center; }
+
+  /* SECTION DIVIDER */
+  .divider { text-align: center; font-size: 12px; color: var(--text2); font-weight: 600; padding: 4px 0; opacity: 0.6; }
+
+  /* TIME MACHINE LEGEND */
+  .legend-item { display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--text2); }
+  .legend-dot { width: 10px; height: 3px; border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- =========================================================
+     PAGE 1: ANA SAYFA (Home)
+     ========================================================= -->
+<div>
+  <p class="page-label">📱 Sayfa 1 — Ana Sayfa</p>
+  <div class="page" style="min-height:860px">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span>🌿 Yeşil Kampüs</span>
+      <span>🌳 Ağaç • 4850 XP</span>
+    </div>
+
+    <!-- Content -->
+    <div class="scroll-area">
+
+      <!-- Header -->
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:12px;color:var(--text2)">Günaydın 🌅</div>
+          <div style="font-family:var(--display);font-size:22px;font-weight:900;color:var(--text)">Elif Yılmaz</div>
+          <div style="font-size:11px;color:var(--g700);font-weight:600">ODTÜ • Çevre Mühendisliği</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:44px;line-height:1" class="float">🌳</div>
+          <div style="font-size:10px;color:var(--text2);margin-top:3px">🔥 12 gün seri</div>
+        </div>
+      </div>
+
+      <!-- Level Progress -->
+      <div class="card card-glow-green">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div style="font-size:14px;font-weight:700;color:var(--text)">🌳 Ağaç</div>
+          <div style="font-size:12px;font-weight:700;color:var(--g700)">4850 / 10000 XP</div>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill lvl-bar-m" style="width:48%"></div>
+        </div>
+        <div style="font-size:10px;color:var(--text2);margin-top:5px">Sonraki seviye: 🌲 Orman • 5150 XP kaldı</div>
+      </div>
+
+      <!-- Today CO2 -->
+      <div class="card">
+        <div class="sec-title">
+          <div><h3>📊 Bugünkü Ayak İzin</h3><p>Çarşamba, 25 Şubat</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px">
+          <div style="text-align:center">
+            <div style="font-family:var(--display);font-size:38px;font-weight:900;color:var(--orange)">7.4</div>
+            <div style="font-size:11px;color:var(--text2)">kg CO₂e</div>
+          </div>
+          <div style="flex:1">
+            <!-- Mini sparkline SVG -->
+            <svg viewBox="0 0 160 50" class="chart-svg">
+              <polyline points="0,40 23,32 46,38 69,20 92,28 115,15 138,24 160,18"
+                fill="none" stroke="var(--g500)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="160" cy="18" r="4" fill="var(--g500)"/>
+            </svg>
+          </div>
+        </div>
+        <div class="grid3">
+          <div class="stat-mini" style="background:rgba(66,165,245,0.1)">
+            <div class="icon">🚗</div>
+            <div class="value" style="color:var(--blue)">2.8</div>
+            <div class="lbl">Ulaşım</div>
+          </div>
+          <div class="stat-mini" style="background:rgba(255,152,0,0.1)">
+            <div class="icon">⚡</div>
+            <div class="value" style="color:var(--orange)">2.9</div>
+            <div class="lbl">Enerji</div>
+          </div>
+          <div class="stat-mini" style="background:rgba(76,175,80,0.1)">
+            <div class="icon">🍽️</div>
+            <div class="value" style="color:var(--g500)">3.2</div>
+            <div class="lbl">Beslenme</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kampüs Nefesi Preview -->
+      <div class="card-dark">
+        <div class="sec-title" style="margin-bottom:8px">
+          <div><h3 style="color:#fff">🫁 Kampüs Nefesi</h3><p style="color:rgba(255,255,255,0.6)">127 kişi izliyor</p></div>
+        </div>
+        <div style="text-align:center;padding:12px 0">
+          <svg width="140" height="140" viewBox="0 0 140 140" style="display:block;margin:0 auto">
+            <circle cx="70" cy="70" r="52" fill="rgba(255,152,0,0.15)" stroke="rgba(255,152,0,0.3)" stroke-width="2">
+              <animate attributeName="r" values="48;62;48" dur="4s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0.4;0.9;0.4" dur="4s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="70" cy="70" r="34" fill="rgba(255,152,0,0.2)">
+              <animate attributeName="r" values="30;44;30" dur="4s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="70" cy="70" r="18" fill="rgba(255,152,0,0.55)">
+              <animate attributeName="r" values="16;24;16" dur="4s" repeatCount="indefinite"/>
+            </circle>
+            <text x="70" y="66" text-anchor="middle" font-size="15" font-weight="900" fill="white" font-family="Fraunces,serif">187</text>
+            <text x="70" y="80" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.7)" font-family="DM Sans,sans-serif">kg CO₂/saat</text>
+          </svg>
+          <div style="color:#FFB74D;font-weight:700;font-size:13px;margin-top:6px">🟡 Normal Nefes</div>
+        </div>
+      </div>
+
+      <!-- Quick Actions 2x2 -->
+      <div class="grid2">
+        <div class="card card-glow-purple" style="cursor:pointer;padding:14px">
+          <div style="font-size:30px">🧬</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-top:6px">Karbon DNA</div>
+          <div style="font-size:10px;color:var(--text2)">Nadir profil</div>
+        </div>
+        <div class="card card-glow-blue" style="cursor:pointer;padding:14px">
+          <div style="font-size:30px">👤</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-top:6px">Karbon İkizi</div>
+          <div style="font-size:10px;color:var(--text2)">Skor: 78%</div>
+        </div>
+        <div class="card card-glow-green" style="cursor:pointer;padding:14px">
+          <div style="font-size:30px">🔮</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-top:6px">Zaman Makinesi</div>
+          <div style="font-size:10px;color:var(--text2)">2035'i Gör</div>
+        </div>
+        <div class="card card-glow-gold" style="cursor:pointer;padding:14px">
+          <div style="font-size:30px">💱</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-top:6px">Karbon Borsası</div>
+          <div style="font-size:10px;color:var(--text2)">₺5.65/kredi</div>
+        </div>
+      </div>
+
+      <!-- Active Challenges -->
+      <div class="card">
+        <div class="sec-title"><div><h3>⚔️ Aktif Görevler</h3></div></div>
+        <div class="row">
+          <div style="flex:1">
+            <div style="font-size:12px;font-weight:600;color:var(--text)">🏃 Merdiven Günü</div>
+            <div class="progress-track" style="margin-top:5px">
+              <div class="progress-fill lvl-bar-m" style="width:80%"></div>
+            </div>
+          </div>
+          <div style="text-align:right"><div style="font-size:11px;font-weight:700;color:var(--g700)">+30 XP</div><div style="font-size:9px;color:var(--text2)">Günlük</div></div>
+        </div>
+        <div class="row">
+          <div style="flex:1">
+            <div style="font-size:12px;font-weight:600;color:var(--text)">👹 Karbon Canavarı</div>
+            <div class="progress-track" style="margin-top:5px">
+              <div class="progress-fill lvl-bar-o" style="width:45%"></div>
+            </div>
+          </div>
+          <div style="text-align:right"><div style="font-size:11px;font-weight:700;color:var(--g700)">+500 XP</div><div style="font-size:9px;color:var(--text2)">Boss</div></div>
+        </div>
+        <div class="row" style="border:none">
+          <div style="flex:1">
+            <div style="font-size:12px;font-weight:600;color:var(--text)">🧬 DNA Evrimi</div>
+            <div class="progress-track" style="margin-top:5px">
+              <div class="progress-fill lvl-bar-m" style="width:62%"></div>
+            </div>
+          </div>
+          <div style="text-align:right"><div style="font-size:11px;font-weight:700;color:var(--g700)">+400 XP</div><div style="font-size:9px;color:var(--text2)">Özel</div></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Nav -->
+    <div class="bottom-nav">
+      <div class="tab-btn active"><span>🏠</span><span>Ana Sayfa</span></div>
+      <div class="tab-btn"><span>🚀</span><span>Keşfet</span></div>
+      <div style="flex:1;display:flex;justify-content:center"><div class="fab">+</div></div>
+      <div class="tab-btn"><span>📈</span><span>Analitik</span></div>
+      <div class="tab-btn"><span>👤</span><span>Profil</span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- =========================================================
+     PAGE 2: KEŞFET — Yenilikçi Özellikler Listesi
+     ========================================================= -->
+<div>
+  <p class="page-label">📱 Sayfa 2 — Keşfet</p>
+  <div class="page" style="min-height:900px">
+    <div class="status-bar"><span>🌿 Yeşil Kampüs</span><span>🌳 Ağaç • 4850 XP</span></div>
+    <div class="scroll-area">
+      <div class="sec-title"><div><h3>🚀 Yenilikçi Özellikler</h3><p>Piyasada ilk! Sadece Yeşil Kampüs'te</p></div></div>
+
+      <!-- Feature List -->
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <!-- DNA -->
+        <div class="card" style="display:flex;gap:12px;align-items:center;border-left:4px solid var(--purple);padding:14px;cursor:pointer">
+          <div style="font-size:32px;width:44px;text-align:center">🧬</div>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:700;color:var(--text)">Karbon DNA</div>
+            <div style="font-size:11px;color:var(--text2)">Benzersiz karbon parmak izin. Dünyada tek!</div>
+          </div>
+          <div style="font-size:18px;color:var(--text3)">›</div>
+        </div>
+        <!-- Twin -->
+        <div class="card" style="display:flex;gap:12px;align-items:center;border-left:4px solid var(--blue);padding:14px;cursor:pointer">
+          <div style="font-size:32px;width:44px;text-align:center">👤</div>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:700;color:var(--text)">Karbon İkizi</div>
+            <div style="font-size:11px;color:var(--text2)">AI alternatif benin. Farklı seçimler yapsan ne olurdu?</div>
+          </div>
+          <div style="font-size:18px;color:var(--text3)">›</div>
+        </div>
+        <!-- Breath -->
+        <div class="card" style="display:flex;gap:12px;align-items:center;border-left:4px solid var(--g500);padding:14px">
+          <div style="font-size:32px;width:44px;text-align:center">🫁</div>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:700;color:var(--text)">Kolektif Nefes</div>
+            <div style="font-size:11px;color:var(--text2)">Kampüsün canlı karbon nefesi</div>
+          </div>
+        </div>
+        <!-- Time Machine -->
+        <div class="card" style="display:flex;gap:12px;align-items:center;border-left:4px solid var(--g700);padding:14px;cursor:pointer">
+          <div style="font-size:32px;width:44px;text-align:center">🔮</div>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:700;color:var(--text)">Zaman Makinesi</div>
+            <div style="font-size:11px;color:var(--text2)">Kampüsün 2035'teki hali — senaryolar</div>
+          </div>
+          <div style="font-size:18px;color:var(--text3)">›</div>
+        </div>
+        <!-- Exchange -->
+        <div class="card" style="display:flex;gap:12px;align-items:center;border-left:4px solid var(--gold);padding:14px;cursor:pointer">
+          <div style="font-size:32px;width:44px;text-align:center">💱</div>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:700;color:var(--text)">Karbon Borsası</div>
+            <div style="font-size:11px;color:var(--text2)">Öğrenciler arası karbon kredi ticareti</div>
+          </div>
+          <div style="font-size:18px;color:var(--text3)">›</div>
+        </div>
+        <!-- Emotion -->
+        <div class="card" style="display:flex;gap:12px;align-items:center;border-left:4px solid #FF7043;padding:14px;cursor:pointer">
+          <div style="font-size:32px;width:44px;text-align:center">🌊</div>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:700;color:var(--text)">Duygu-Karbon Haritası</div>
+            <div style="font-size:11px;color:var(--text2)">Mutluluk ve karbon korelasyonu</div>
+          </div>
+          <div style="font-size:18px;color:var(--text3)">›</div>
+        </div>
+        <!-- Contracts -->
+        <div class="card" style="display:flex;gap:12px;align-items:center;border-left:4px solid var(--g600);padding:14px;cursor:pointer">
+          <div style="font-size:32px;width:44px;text-align:center">🤝</div>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:700;color:var(--text)">Sosyal Sözleşme</div>
+            <div style="font-size:11px;color:var(--text2)">Arkadaşlarla karbon azaltma taahhüdü</div>
+          </div>
+          <div style="font-size:18px;color:var(--text3)">›</div>
+        </div>
+        <!-- Symphony -->
+        <div class="card" style="display:flex;gap:12px;align-items:center;border-left:4px solid #E91E63;padding:14px;cursor:pointer">
+          <div style="font-size:32px;width:44px;text-align:center">🎵</div>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:700;color:var(--text)">Karbon Senfonisi</div>
+            <div style="font-size:11px;color:var(--text2)">Emisyon verini müziğe dönüştür</div>
+          </div>
+          <div style="font-size:18px;color:var(--text3)">›</div>
+        </div>
+        <!-- Memory -->
+        <div class="card" style="display:flex;gap:12px;align-items:center;border-left:4px solid var(--orange);padding:14px;cursor:pointer">
+          <div style="font-size:32px;width:44px;text-align:center">🧠</div>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:700;color:var(--text)">Karbon Hafıza</div>
+            <div style="font-size:11px;color:var(--text2)">AI, unutulan verileri tahmin eder</div>
+          </div>
+          <div style="font-size:18px;color:var(--text3)">›</div>
+        </div>
+        <!-- Bio Sync -->
+        <div class="card" style="display:flex;gap:12px;align-items:center;border-left:4px solid var(--teal);padding:14px;cursor:pointer">
+          <div style="font-size:32px;width:44px;text-align:center">💚</div>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:700;color:var(--text)">Bio-Senkronizasyon</div>
+            <div style="font-size:11px;color:var(--text2)">Sağlık + karbon verisi birleşimi</div>
+          </div>
+          <div style="font-size:18px;color:var(--text3)">›</div>
+        </div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="tab-btn"><span>🏠</span><span>Ana Sayfa</span></div>
+      <div class="tab-btn active"><span>🚀</span><span>Keşfet</span></div>
+      <div style="flex:1;display:flex;justify-content:center"><div class="fab">+</div></div>
+      <div class="tab-btn"><span>📈</span><span>Analitik</span></div>
+      <div class="tab-btn"><span>👤</span><span>Profil</span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- =========================================================
+     PAGE 3: KARBON DNA
+     ========================================================= -->
+<div>
+  <p class="page-label">📱 Sayfa 3 — Karbon DNA</p>
+  <div class="page" style="min-height:820px">
+    <div class="status-bar"><span>🌿 Yeşil Kampüs</span><span>🌳 Ağaç • 4850 XP</span></div>
+    <div class="scroll-area">
+      <!-- Back + Title -->
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="back-btn">←</button>
+        <div><h3 style="font-family:var(--display);font-size:16px;font-weight:900;color:var(--text)">🧬 Karbon DNA</h3><p style="font-size:11px;color:var(--text2)">Benzersiz karbon parmak izin</p></div>
+      </div>
+
+      <!-- DNA Viz Card -->
+      <div class="card card-glow-purple" style="text-align:center">
+        <svg width="220" height="220" viewBox="0 0 220 220" style="display:block;margin:0 auto">
+          <defs>
+            <linearGradient id="dg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#66BB6A"/>
+              <stop offset="50%" stop-color="#42A5F5"/>
+              <stop offset="100%" stop-color="#AB47BC"/>
+            </linearGradient>
+          </defs>
+          <!-- radial segments -->
+          <g transform="translate(110,110)">
+            <line x1="0" y1="0" x2="85" y2="0" stroke="rgba(165,214,167,0.3)" stroke-width="1"/>
+            <line x1="0" y1="0" x2="52" y2="-73" stroke="rgba(165,214,167,0.3)" stroke-width="1"/>
+            <line x1="0" y1="0" x2="-43" y2="-78" stroke="rgba(165,214,167,0.3)" stroke-width="1"/>
+            <line x1="0" y1="0" x2="-85" y2="0" stroke="rgba(165,214,167,0.3)" stroke-width="1"/>
+            <line x1="0" y1="0" x2="-43" y2="78" stroke="rgba(165,214,167,0.3)" stroke-width="1"/>
+            <line x1="0" y1="0" x2="52" y2="73" stroke="rgba(165,214,167,0.3)" stroke-width="1"/>
+
+            <!-- Dots with pulse animations -->
+            <circle cx="72" cy="0" r="12" fill="url(#dg)" opacity="0.8">
+              <animate attributeName="r" values="10;14;10" dur="3s" repeatCount="indefinite" begin="0s"/>
+            </circle>
+            <circle cx="44" cy="-60" r="9" fill="url(#dg)" opacity="0.7">
+              <animate attributeName="r" values="7;12;7" dur="3s" repeatCount="indefinite" begin="0.5s"/>
+            </circle>
+            <circle cx="-36" cy="-64" r="14" fill="url(#dg)" opacity="0.9">
+              <animate attributeName="r" values="12;16;12" dur="3s" repeatCount="indefinite" begin="1s"/>
+            </circle>
+            <circle cx="-72" cy="0" r="8" fill="url(#dg)" opacity="0.6">
+              <animate attributeName="r" values="6;10;6" dur="3s" repeatCount="indefinite" begin="1.5s"/>
+            </circle>
+            <circle cx="-36" cy="64" r="13" fill="url(#dg)" opacity="0.8">
+              <animate attributeName="r" values="11;15;11" dur="3s" repeatCount="indefinite" begin="2s"/>
+            </circle>
+            <circle cx="44" cy="60" r="11" fill="url(#dg)" opacity="0.75">
+              <animate attributeName="r" values="9;13;9" dur="3s" repeatCount="indefinite" begin="2.5s"/>
+            </circle>
+
+            <!-- Center -->
+            <circle cx="0" cy="0" r="22" fill="rgba(171,71,188,0.25)">
+              <animate attributeName="r" values="18;24;18" dur="4s" repeatCount="indefinite"/>
+            </circle>
+            <text text-anchor="middle" dy="4" font-size="11" font-weight="700" fill="var(--text)" font-family="monospace">ATGC</text>
+          </g>
+
+          <!-- labels -->
+          <text x="196" y="113" text-anchor="middle" font-size="8" fill="var(--text2)" font-family="DM Sans,sans-serif">transp</text>
+          <text x="166" y="47" text-anchor="middle" font-size="8" fill="var(--text2)" font-family="DM Sans,sans-serif">energy</text>
+          <text x="74" y="48" text-anchor="middle" font-size="8" fill="var(--text2)" font-family="DM Sans,sans-serif">food</text>
+          <text x="24" y="113" text-anchor="middle" font-size="8" fill="var(--text2)" font-family="DM Sans,sans-serif">waste</text>
+          <text x="74" y="178" text-anchor="middle" font-size="8" fill="var(--text2)" font-family="DM Sans,sans-serif">water</text>
+          <text x="166" y="179" text-anchor="middle" font-size="8" fill="var(--text2)" font-family="DM Sans,sans-serif">digital</text>
+        </svg>
+        <div style="margin-top:10px">
+          <div style="font-family:var(--display);font-size:15px;font-weight:900;color:var(--text)">DNA Sekansın</div>
+          <div style="font-size:20px;font-weight:700;color:var(--purple);font-family:monospace;letter-spacing:4px;margin-top:4px">ATGCGATCTACG</div>
+          <div style="display:inline-block;margin-top:8px;background:rgba(171,71,188,0.12);border-radius:12px;padding:4px 14px">
+            <span style="font-size:11px;font-weight:700;color:var(--purple)">✨ Nadir</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Segments -->
+      <div class="card">
+        <div class="sec-title"><div><h3>📊 DNA Segmentleri</h3></div></div>
+        <div class="progress-wrap">
+          <div class="progress-label"><span>Transport</span><strong>78%</strong></div>
+          <div class="progress-track"><div class="progress-fill lvl-bar-r" style="width:78%"></div></div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-label"><span>Energy</span><strong>55%</strong></div>
+          <div class="progress-track"><div class="progress-fill lvl-bar-o" style="width:55%"></div></div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-label"><span>Food</span><strong>42%</strong></div>
+          <div class="progress-track"><div class="progress-fill lvl-bar-m" style="width:42%"></div></div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-label"><span>Waste</span><strong>31%</strong></div>
+          <div class="progress-track"><div class="progress-fill lvl-bar-g" style="width:31%"></div></div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-label"><span>Consistency</span><strong>88%</strong></div>
+          <div class="progress-track"><div class="progress-fill lvl-bar-m" style="width:88%"></div></div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-label"><span>Social</span><strong>62%</strong></div>
+          <div class="progress-track"><div class="progress-fill lvl-bar-g" style="width:62%"></div></div>
+        </div>
+      </div>
+
+      <!-- Dominant Trait -->
+      <div class="card">
+        <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:6px">🎯 Baskın Özellik</div>
+        <div style="font-size:14px;font-weight:600;color:var(--g700)">🚗 Ulaşım odaklı profil</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:4px">Bu alanda en çok iyileştirme potansiyelin var!</div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="tab-btn"><span>🏠</span><span>Ana Sayfa</span></div>
+      <div class="tab-btn active"><span>🚀</span><span>Keşfet</span></div>
+      <div style="flex:1;display:flex;justify-content:center"><div class="fab">+</div></div>
+      <div class="tab-btn"><span>📈</span><span>Analitik</span></div>
+      <div class="tab-btn"><span>👤</span><span>Profil</span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- =========================================================
+     PAGE 4: KARBON İKİZİ
+     ========================================================= -->
+<div>
+  <p class="page-label">📱 Sayfa 4 — Karbon İkizi</p>
+  <div class="page" style="min-height:760px">
+    <div class="status-bar"><span>🌿 Yeşil Kampüs</span><span>🌳 Ağaç • 4850 XP</span></div>
+    <div class="scroll-area">
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="back-btn">←</button>
+        <div><h3 style="font-family:var(--display);font-size:16px;font-weight:900;color:var(--text)">👤 Karbon İkizi</h3><p style="font-size:11px;color:var(--text2)">Alternatif sen ne yapardı?</p></div>
+      </div>
+
+      <div class="card card-glow-blue">
+        <div style="display:flex;gap:10px;align-items:stretch">
+          <div class="twin-col" style="background:rgba(239,83,80,0.1);border:1px solid rgba(239,83,80,0.25)">
+            <div style="font-size:10px;color:var(--text2);margin-bottom:4px">👤 Gerçek Sen</div>
+            <div class="twin-num" style="color:var(--red)">18.4</div>
+            <div class="twin-lbl">kg CO₂/hafta</div>
+          </div>
+          <div style="display:flex;align-items:center">
+            <div style="background:var(--g50);border-radius:20px;padding:6px 10px;font-size:11px;font-weight:700;color:var(--g800)">-12.0 kg</div>
+          </div>
+          <div class="twin-col" style="background:rgba(76,175,80,0.1);border:1px solid rgba(76,175,80,0.25)">
+            <div style="font-size:10px;color:var(--text2);margin-bottom:4px">🌿 Karbon İkizin</div>
+            <div class="twin-num" style="color:var(--g700)">6.4</div>
+            <div class="twin-lbl">kg CO₂/hafta</div>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:14px">
+          <div style="font-family:var(--display);font-size:34px;font-weight:900;color:var(--g700)">%78</div>
+          <div style="font-size:11px;color:var(--text2)">İkiz Performans Skoru</div>
+          <div style="font-size:11px;color:var(--g700);margin-top:4px;font-weight:600">🌳 0.55 ağaç eşdeğeri tasarruf potansiyeli</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="sec-title"><div><h3>💡 İkizinin Tavsiyeleri</h3></div></div>
+        <div class="row">
+          <div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--text)">Bisiklet/yürüyüş ile ulaşım</div><div style="font-size:10px;color:var(--text2)">transport</div></div>
+          <div style="font-size:12px;font-weight:700;color:var(--g700)">-4.2 kg</div>
+        </div>
+        <div class="row">
+          <div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--text)">Vegan beslenme</div><div style="font-size:10px;color:var(--text2)">food</div></div>
+          <div style="font-size:12px;font-weight:700;color:var(--g700)">-3.8 kg</div>
+        </div>
+        <div class="row">
+          <div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--text)">Yenilenebilir enerji</div><div style="font-size:10px;color:var(--text2)">energy</div></div>
+          <div style="font-size:12px;font-weight:700;color:var(--g700)">-2.9 kg</div>
+        </div>
+        <div class="row" style="border:none">
+          <div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--text)">Dijital detoks</div><div style="font-size:10px;color:var(--text2)">digital</div></div>
+          <div style="font-size:12px;font-weight:700;color:var(--g700)">-0.4 kg</div>
+        </div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="tab-btn"><span>🏠</span><span>Ana Sayfa</span></div>
+      <div class="tab-btn active"><span>🚀</span><span>Keşfet</span></div>
+      <div style="flex:1;display:flex;justify-content:center"><div class="fab">+</div></div>
+      <div class="tab-btn"><span>📈</span><span>Analitik</span></div>
+      <div class="tab-btn"><span>👤</span><span>Profil</span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- =========================================================
+     PAGE 5: ZAMAN MAKİNESİ
+     ========================================================= -->
+<div>
+  <p class="page-label">📱 Sayfa 5 — Zaman Makinesi</p>
+  <div class="page" style="min-height:760px">
+    <div class="status-bar"><span>🌿 Yeşil Kampüs</span><span>🌳 Ağaç • 4850 XP</span></div>
+    <div class="scroll-area">
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="back-btn">←</button>
+        <div><h3 style="font-family:var(--display);font-size:16px;font-weight:900;color:var(--text)">🔮 Zaman Makinesi</h3><p style="font-size:11px;color:var(--text2)">Kampüsün geleceği senin elinde</p></div>
+      </div>
+
+      <div class="card card-glow-green">
+        <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:8px">Kampüs CO₂ Projeksiyonu (ton/yıl)</div>
+        <svg viewBox="0 0 300 180" class="chart-svg" style="height:180px">
+          <defs>
+            <linearGradient id="optGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="rgba(76,175,80,0.3)"/>
+              <stop offset="100%" stop-color="rgba(76,175,80,0)"/>
+            </linearGradient>
+          </defs>
+          <!-- Grid lines -->
+          <line x1="20" y1="20" x2="280" y2="20" stroke="var(--g50)" stroke-width="1"/>
+          <line x1="20" y1="80" x2="280" y2="80" stroke="var(--g50)" stroke-width="1"/>
+          <line x1="20" y1="140" x2="280" y2="140" stroke="var(--g50)" stroke-width="1"/>
+
+          <!-- Pessimistic fill -->
+          <path d="M20,50 C60,55 100,68 140,80 S220,100 280,115 L280,155 L20,155 Z" fill="rgba(239,83,80,0.1)"/>
+          <!-- Realistic fill -->
+          <path d="M20,50 C60,50 100,55 140,65 S220,75 280,88 L280,155 L20,155 Z" fill="rgba(255,152,0,0.12)"/>
+          <!-- Optimistic fill -->
+          <path d="M20,50 C60,45 100,42 140,38 S220,32 280,28 L280,155 L20,155 Z" fill="url(#optGrad)"/>
+
+          <!-- Lines -->
+          <path d="M20,50 C60,55 100,68 140,80 S220,100 280,115" fill="none" stroke="var(--red)" stroke-width="2" stroke-dasharray="5,3"/>
+          <path d="M20,50 C60,50 100,55 140,65 S220,75 280,88" fill="none" stroke="var(--orange)" stroke-width="2"/>
+          <path d="M20,50 C60,45 100,42 140,38 S220,32 280,28" fill="none" stroke="var(--g500)" stroke-width="2.5"/>
+
+          <!-- Start dot -->
+          <circle cx="20" cy="50" r="5" fill="var(--orange)"/>
+          <!-- End dot optimistic -->
+          <circle cx="280" cy="28" r="5" fill="var(--g500)"/>
+
+          <!-- X labels -->
+          <text x="20" y="170" text-anchor="middle" font-size="8" fill="var(--text2)" font-family="DM Sans">2026</text>
+          <text x="93" y="170" text-anchor="middle" font-size="8" fill="var(--text2)" font-family="DM Sans">2028</text>
+          <text x="166" y="170" text-anchor="middle" font-size="8" fill="var(--text2)" font-family="DM Sans">2030</text>
+          <text x="239" y="170" text-anchor="middle" font-size="8" fill="var(--text2)" font-family="DM Sans">2032</text>
+          <text x="280" y="170" text-anchor="middle" font-size="8" fill="var(--text2)" font-family="DM Sans">2035</text>
+        </svg>
+        <div style="display:flex;justify-content:center;gap:16px;margin-top:8px">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--g500)"></div>İyimser</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div>Gerçekçi</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Kötümser</div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="scenario-card" style="background:rgba(76,175,80,0.1)">
+          <div style="font-size:10px;color:var(--text2)">🌟 En İyi 2035</div>
+          <div style="font-family:var(--display);font-size:26px;font-weight:900;color:var(--g700)">1,820</div>
+          <div style="font-size:10px;color:var(--text2)">ton CO₂/yıl</div>
+        </div>
+        <div class="scenario-card" style="background:rgba(239,83,80,0.1)">
+          <div style="font-size:10px;color:var(--text2)">⚠️ En Kötü 2035</div>
+          <div style="font-family:var(--display);font-size:26px;font-weight:900;color:var(--red)">4,210</div>
+          <div style="font-size:10px;color:var(--text2)">ton CO₂/yıl</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:8px">🎮 Senaryonu Seç</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:10px;background:rgba(76,175,80,0.08);border:1px solid rgba(76,175,80,0.2)">
+            <span style="font-size:12px;font-weight:600">🌿 Tam Dönüşüm</span>
+            <span style="font-size:11px;color:var(--g700);font-weight:700">-%64</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:10px;background:rgba(255,152,0,0.08);border:1px solid rgba(255,152,0,0.2)">
+            <span style="font-size:12px;font-weight:600">⚖️ Dengeli İlerleme</span>
+            <span style="font-size:11px;color:var(--orange);font-weight:700">-%40</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:10px;background:rgba(239,83,80,0.08);border:1px solid rgba(239,83,80,0.2)">
+            <span style="font-size:12px;font-weight:600">😴 Mevcut Gidişat</span>
+            <span style="font-size:11px;color:var(--red);font-weight:700">-%16</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="tab-btn"><span>🏠</span><span>Ana Sayfa</span></div>
+      <div class="tab-btn active"><span>🚀</span><span>Keşfet</span></div>
+      <div style="flex:1;display:flex;justify-content:center"><div class="fab">+</div></div>
+      <div class="tab-btn"><span>📈</span><span>Analitik</span></div>
+      <div class="tab-btn"><span>👤</span><span>Profil</span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- =========================================================
+     PAGE 6: ANALİTİK
+     ========================================================= -->
+<div>
+  <p class="page-label">📱 Sayfa 6 — Analitik</p>
+  <div class="page" style="min-height:870px">
+    <div class="status-bar"><span>🌿 Yeşil Kampüs</span><span>🌳 Ağaç • 4850 XP</span></div>
+    <div class="scroll-area">
+      <div class="sec-title"><div><h3>📈 Analitik</h3><p>Detaylı karbon analizi</p></div></div>
+
+      <!-- Weekly Stacked Bar -->
+      <div class="card">
+        <div class="sec-title" style="margin-bottom:10px"><div><h3>📊 Haftalık Emisyon</h3><p>Kategori bazlı dağılım</p></div></div>
+        <div class="bar-chart" style="height:160px;align-items:flex-end">
+          <!-- Mon -->
+          <div class="bar-col">
+            <span class="bar-total">8.2</span>
+            <div class="bar-stack" style="height:110px">
+              <div class="bar-seg" style="height:18px;background:#42A5F5"></div>
+              <div class="bar-seg" style="height:30px;background:#FF9800"></div>
+              <div class="bar-seg" style="height:38px;background:#4CAF50"></div>
+              <div class="bar-seg" style="height:14px;background:#AB47BC"></div>
+              <div class="bar-seg" style="height:10px;background:#90CAF9"></div>
+            </div>
+            <span class="bar-label">Pzt</span>
+          </div>
+          <!-- Tue -->
+          <div class="bar-col">
+            <span class="bar-total">6.4</span>
+            <div class="bar-stack" style="height:85px">
+              <div class="bar-seg" style="height:14px;background:#42A5F5"></div>
+              <div class="bar-seg" style="height:22px;background:#FF9800"></div>
+              <div class="bar-seg" style="height:30px;background:#4CAF50"></div>
+              <div class="bar-seg" style="height:12px;background:#AB47BC"></div>
+              <div class="bar-seg" style="height:7px;background:#90CAF9"></div>
+            </div>
+            <span class="bar-label">Sal</span>
+          </div>
+          <!-- Wed -->
+          <div class="bar-col">
+            <span class="bar-total">9.1</span>
+            <div class="bar-stack" style="height:120px">
+              <div class="bar-seg" style="height:22px;background:#42A5F5"></div>
+              <div class="bar-seg" style="height:34px;background:#FF9800"></div>
+              <div class="bar-seg" style="height:42px;background:#4CAF50"></div>
+              <div class="bar-seg" style="height:16px;background:#AB47BC"></div>
+              <div class="bar-seg" style="height:6px;background:#90CAF9"></div>
+            </div>
+            <span class="bar-label">Çar</span>
+          </div>
+          <!-- Thu -->
+          <div class="bar-col">
+            <span class="bar-total">7.5</span>
+            <div class="bar-stack" style="height:100px">
+              <div class="bar-seg" style="height:16px;background:#42A5F5"></div>
+              <div class="bar-seg" style="height:28px;background:#FF9800"></div>
+              <div class="bar-seg" style="height:35px;background:#4CAF50"></div>
+              <div class="bar-seg" style="height:14px;background:#AB47BC"></div>
+              <div class="bar-seg" style="height:7px;background:#90CAF9"></div>
+            </div>
+            <span class="bar-label">Per</span>
+          </div>
+          <!-- Fri -->
+          <div class="bar-col">
+            <span class="bar-total">11.2</span>
+            <div class="bar-stack" style="height:148px">
+              <div class="bar-seg" style="height:28px;background:#42A5F5"></div>
+              <div class="bar-seg" style="height:40px;background:#FF9800"></div>
+              <div class="bar-seg" style="height:52px;background:#4CAF50"></div>
+              <div class="bar-seg" style="height:18px;background:#AB47BC"></div>
+              <div class="bar-seg" style="height:10px;background:#90CAF9"></div>
+            </div>
+            <span class="bar-label">Cum</span>
+          </div>
+          <!-- Sat -->
+          <div class="bar-col">
+            <span class="bar-total">5.8</span>
+            <div class="bar-stack" style="height:77px">
+              <div class="bar-seg" style="height:12px;background:#42A5F5"></div>
+              <div class="bar-seg" style="height:20px;background:#FF9800"></div>
+              <div class="bar-seg" style="height:28px;background:#4CAF50"></div>
+              <div class="bar-seg" style="height:10px;background:#AB47BC"></div>
+              <div class="bar-seg" style="height:7px;background:#90CAF9"></div>
+            </div>
+            <span class="bar-label">Cmt</span>
+          </div>
+          <!-- Sun -->
+          <div class="bar-col">
+            <span class="bar-total">4.3</span>
+            <div class="bar-stack" style="height:57px">
+              <div class="bar-seg" style="height:8px;background:#42A5F5"></div>
+              <div class="bar-seg" style="height:16px;background:#FF9800"></div>
+              <div class="bar-seg" style="height:22px;background:#4CAF50"></div>
+              <div class="bar-seg" style="height:8px;background:#AB47BC"></div>
+              <div class="bar-seg" style="height:3px;background:#90CAF9"></div>
+            </div>
+            <span class="bar-label">Paz</span>
+          </div>
+        </div>
+        <!-- Legend -->
+        <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:10px">
+          <div style="display:flex;align-items:center;gap:3px;font-size:9px;color:var(--text2)"><div style="width:8px;height:8px;border-radius:2px;background:#42A5F5"></div>Ulaşım</div>
+          <div style="display:flex;align-items:center;gap:3px;font-size:9px;color:var(--text2)"><div style="width:8px;height:8px;border-radius:2px;background:#FF9800"></div>Enerji</div>
+          <div style="display:flex;align-items:center;gap:3px;font-size:9px;color:var(--text2)"><div style="width:8px;height:8px;border-radius:2px;background:#4CAF50"></div>Yemek</div>
+          <div style="display:flex;align-items:center;gap:3px;font-size:9px;color:var(--text2)"><div style="width:8px;height:8px;border-radius:2px;background:#AB47BC"></div>Atık</div>
+          <div style="display:flex;align-items:center;gap:3px;font-size:9px;color:var(--text2)"><div style="width:8px;height:8px;border-radius:2px;background:#90CAF9"></div>Su</div>
+        </div>
+      </div>
+
+      <!-- Hourly Chart -->
+      <div class="card">
+        <div class="sec-title" style="margin-bottom:10px"><div><h3>⏰ Saatlik Patern</h3><p>CO₂ yoğunluk dağılımı</p></div></div>
+        <div class="hourly-chart">
+          <div class="hourly-col"><div class="hourly-bar" style="height:30px;background:var(--g500)"></div><span class="hourly-lbl">00</span></div>
+          <div class="hourly-col"><div class="hourly-bar" style="height:20px;background:var(--g500)"></div></div>
+          <div class="hourly-col"><div class="hourly-bar" style="height:18px;background:var(--g500)"></div></div>
+          <div class="hourly-col"><div class="hourly-bar" style="height:15px;background:var(--g500)"></div></div>
+          <div class="hourly-col"><div class="hourly-bar" style="height:22px;background:var(--g500)"></div><span class="hourly-lbl">04</span></div>
+          <div class="hourly-col"><div class="hourly-bar" style="height:35px;background:var(--orange)"></div></div>
+          <div class="hourly-col"><div class="hourly-bar" style="height:50px;background:var(--orange)"></div></div>
+          <div class="hourly-col"><div class="hourly-bar" style="height:68px;background:var(--orange)"></div></div>
+          <div class="hourly-col"><div class="hourly-bar" style="height:80px;background:var(--red)"></div><span class="hourly-lbl">08</span></div>
+          <div class="hourly-col"><div class="hourly-bar" style="height:88px;background:var(--red)"></div></div>
+          <div class="hourly-col"><div class="hourly-bar" style="height:76px;background:var(--red)"></div></div>
+          <div class="hourly-col"><div class="hourly-bar" style="height:70px;background:var(--orange)"></div></div>
+          <div class="hourly-col"><div class="hourly-bar" style="height:82px;background:var(--red)"></div><span class="hourly-lbl">12</span></div>
+          <div class="hourly-col"><div class="hourly-bar" style="height:74px;background:var(--red)"></div></div>
+          <div class="hourly-col"><div class="hourly-bar" style="height:65px;background:var(--orange)"></div></div>
+          <div class="hourly-col"><div class="hourly-bar" style="height:58px;background:var(--orange)"></div></div>
+          <div class="hourly-col"><div class="hourly-bar" style="height:52px;background:var(--orange)"></div><span class="hourly-lbl">16</span></div>
+          <div class="hourly-col"><div class="hourly-bar" style="height:44px;background:var(--orange)"></div></div>
+          <div class="hourly-col"><div class="hourly-bar" style="height:36px;background:var(--orange)"></div></div>
+          <div class="hourly-col"><div class="hourly-bar" style="height:30px;background:var(--g500)"></div></div>
+          <div class="hourly-col"><div class="hourly-bar" style="height:28px;background:var(--g500)"></div><span class="hourly-lbl">20</span></div>
+          <div class="hourly-col"><div class="hourly-bar" style="height:25px;background:var(--g500)"></div></div>
+          <div class="hourly-col"><div class="hourly-bar" style="height:22px;background:var(--g500)"></div></div>
+          <div class="hourly-col"><div class="hourly-bar" style="height:28px;background:var(--g500)"></div></div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="grid2">
+        <div class="card" style="text-align:center">
+          <div style="font-size:10px;color:var(--text2)">Haftalık Toplam</div>
+          <div style="font-family:var(--display);font-size:26px;font-weight:900;color:var(--g700)">52.5</div>
+          <div style="font-size:10px;color:var(--text2)">kg CO₂e</div>
+        </div>
+        <div class="card" style="text-align:center">
+          <div style="font-size:10px;color:var(--text2)">Günlük Ortalama</div>
+          <div style="font-family:var(--display);font-size:26px;font-weight:900;color:var(--orange)">7.5</div>
+          <div style="font-size:10px;color:var(--text2)">kg CO₂e</div>
+        </div>
+      </div>
+
+      <!-- Budget -->
+      <div class="card">
+        <div class="sec-title"><div><h3>🎯 Karbon Bütçesi</h3></div></div>
+        <div class="progress-wrap">
+          <div class="progress-label"><span>Bugünkü: 7.4 / 5.5 kg</span><strong style="color:var(--orange)">135%</strong></div>
+          <div class="progress-track" style="height:12px">
+            <div class="progress-fill lvl-bar-o" style="width:100%"></div>
+          </div>
+        </div>
+        <div style="font-size:10px;color:var(--orange);margin-top:6px;font-weight:600">⚠️ Günlük bütçeyi aştın!</div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="tab-btn"><span>🏠</span><span>Ana Sayfa</span></div>
+      <div class="tab-btn"><span>🚀</span><span>Keşfet</span></div>
+      <div style="flex:1;display:flex;justify-content:center"><div class="fab">+</div></div>
+      <div class="tab-btn active"><span>📈</span><span>Analitik</span></div>
+      <div class="tab-btn"><span>👤</span><span>Profil</span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- =========================================================
+     PAGE 7: PROFİL
+     ========================================================= -->
+<div>
+  <p class="page-label">📱 Sayfa 7 — Profil</p>
+  <div class="page" style="min-height:900px">
+    <div class="status-bar"><span>🌿 Yeşil Kampüs</span><span>🌳 Ağaç • 4850 XP</span></div>
+    <div class="scroll-area">
+      <!-- Profile Hero -->
+      <div class="card-dark" style="text-align:center;padding:24px 16px">
+        <div style="font-size:54px;margin-bottom:10px">🌳</div>
+        <div style="font-family:var(--display);font-size:20px;font-weight:900">Elif Yılmaz</div>
+        <div style="font-size:12px;opacity:0.75;margin-top:2px">ODTÜ • Çevre Mühendisliği</div>
+        <div style="display:flex;justify-content:center;gap:24px;margin-top:14px">
+          <div><div style="font-family:var(--display);font-size:22px;font-weight:900">4850</div><div style="font-size:10px;opacity:0.65">XP</div></div>
+          <div><div style="font-family:var(--display);font-size:22px;font-weight:900">🔥 12</div><div style="font-size:10px;opacity:0.65">Seri</div></div>
+          <div><div style="font-family:var(--display);font-size:22px;font-weight:900">5</div><div style="font-size:10px;opacity:0.65">Rozet</div></div>
+        </div>
+      </div>
+
+      <!-- Badges -->
+      <div class="card">
+        <div class="sec-title"><div><h3>🏅 Rozetlerin</h3><p>5/10 kazanıldı</p></div></div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px">
+          <div class="badge-item" style="background:rgba(76,175,80,0.1)">
+            <span class="badge-icon">🚲</span>
+            <span class="badge-name">Bisiklet Kaplanı</span>
+          </div>
+          <div class="badge-item" style="background:rgba(76,175,80,0.1)">
+            <span class="badge-icon">♻️</span>
+            <span class="badge-name">Sıfır Atık</span>
+          </div>
+          <div class="badge-item" style="background:rgba(138,159,138,0.1);opacity:0.4">
+            <span class="badge-icon">🥗</span>
+            <span class="badge-name">Vejetaryen Hafta</span>
+          </div>
+          <div class="badge-item" style="background:rgba(76,175,80,0.1)">
+            <span class="badge-icon">⚡</span>
+            <span class="badge-name">Enerji Dedektifi</span>
+          </div>
+          <div class="badge-item" style="background:rgba(138,159,138,0.1);opacity:0.4">
+            <span class="badge-icon">🌳</span>
+            <span class="badge-name">Kampüs Kahramanı</span>
+          </div>
+          <div class="badge-item" style="background:rgba(138,159,138,0.1);opacity:0.4">
+            <span class="badge-icon">🖤</span>
+            <span class="badge-name">Karbon Negatif</span>
+          </div>
+          <div class="badge-item" style="background:rgba(76,175,80,0.1)">
+            <span class="badge-icon">🧬</span>
+            <span class="badge-name">DNA Mutant</span>
+          </div>
+          <div class="badge-item" style="background:rgba(138,159,138,0.1);opacity:0.4">
+            <span class="badge-icon">👤</span>
+            <span class="badge-name">İkiz Ustası</span>
+          </div>
+          <div class="badge-item" style="background:rgba(76,175,80,0.1)">
+            <span class="badge-icon">🎵</span>
+            <span class="badge-name">Karbon Besteci</span>
+          </div>
+          <div class="badge-item" style="background:rgba(138,159,138,0.1);opacity:0.4">
+            <span class="badge-icon">🤝</span>
+            <span class="badge-name">Söz Tutanı</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Green Story -->
+      <div class="card">
+        <div class="sec-title"><div><h3>🌳 Yeşil Hikayem</h3></div></div>
+        <div style="display:flex;align-items:center;gap:14px;padding:6px 0">
+          <div style="font-size:42px">🌳</div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--text)">Ağacın büyüyor!</div>
+            <div style="font-size:11px;color:var(--text2)">Tohum → Filiz → Fidan → Ağaç 🎉</div>
+            <div style="font-size:10px;color:var(--g700);margin-top:3px;font-weight:600">Toplam 47.3 kg CO₂ tasarruf ettin</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leaderboard -->
+      <div class="card">
+        <div class="sec-title"><div><h3>🏆 Kampüs Sıralaması</h3></div></div>
+        <div class="lb-row"><div style="font-size:16px;width:24px;text-align:center">🥇</div><div style="flex:1"><div style="font-size:12px;font-weight:500;color:var(--text)">Mehmet A.</div><div style="font-size:10px;color:var(--text2)">Makine Müh.</div></div><div style="font-size:12px;font-weight:700;color:var(--g700)">12,500 XP</div></div>
+        <div class="lb-row"><div style="font-size:16px;width:24px;text-align:center">🥈</div><div style="flex:1"><div style="font-size:12px;font-weight:500;color:var(--text)">Ayşe B.</div><div style="font-size:10px;color:var(--text2)">Çevre Müh.</div></div><div style="font-size:12px;font-weight:700;color:var(--g700)">9,800 XP</div></div>
+        <div class="lb-row"><div style="font-size:16px;width:24px;text-align:center">🥉</div><div style="flex:1"><div style="font-size:12px;font-weight:500;color:var(--text)">Can D.</div><div style="font-size:10px;color:var(--text2)">Bilgisayar Müh.</div></div><div style="font-size:12px;font-weight:700;color:var(--g700)">8,200 XP</div></div>
+        <div class="lb-row me"><div style="font-size:12px;font-weight:700;color:var(--text2);width:24px;text-align:center">#7</div><div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--text)">Elif Y. (Sen)</div><div style="font-size:10px;color:var(--text2)">Çevre Müh.</div></div><div style="font-size:12px;font-weight:700;color:var(--g700)">4,850 XP</div></div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="tab-btn"><span>🏠</span><span>Ana Sayfa</span></div>
+      <div class="tab-btn"><span>🚀</span><span>Keşfet</span></div>
+      <div style="flex:1;display:flex;justify-content:center"><div class="fab">+</div></div>
+      <div class="tab-btn"><span>📈</span><span>Analitik</span></div>
+      <div class="tab-btn active"><span>👤</span><span>Profil</span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- =========================================================
+     PAGE 8: EMİSYON EKLE (Modal)
+     ========================================================= -->
+<div>
+  <p class="page-label">📱 Sayfa 8 — Emisyon Ekle (Modal)</p>
+  <div class="page" style="min-height:740px">
+    <div class="status-bar"><span>🌿 Yeşil Kampüs</span><span>🌳 Ağaç • 4850 XP</span></div>
+    <!-- Blurred background hint -->
+    <div style="flex:1;background:var(--bg);min-height:200px;position:relative;">
+      <div style="padding:16px 14px;opacity:0.3;filter:blur(2px)">
+        <div class="card" style="height:80px"></div>
+        <div class="card" style="height:60px;margin-top:10px"></div>
+      </div>
+      <!-- Dark overlay -->
+      <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4)"></div>
+    </div>
+    <!-- Bottom Sheet -->
+    <div class="modal-sheet">
+      <div class="modal-drag"></div>
+      <div class="sec-title" style="margin-bottom:14px"><div><h3>➕ Emisyon Ekle</h3><p>Bugünkü aktiviteni kaydet</p></div></div>
+      <div class="grid2" style="gap:8px">
+        <div class="etype-btn"><span class="ename">🚗 Araba</span><div class="efactor">0.171 kg CO₂/km</div></div>
+        <div class="etype-btn"><span class="ename">🚌 Otobüs</span><div class="efactor">0.089 kg CO₂/km</div></div>
+        <div class="etype-btn"><span class="ename">🚲 Bisiklet</span><div class="efactor">0 kg CO₂/km</div></div>
+        <div class="etype-btn"><span class="ename">⚡ Elektrik</span><div class="efactor">0.43 kg CO₂/kWh</div></div>
+        <div class="etype-btn"><span class="ename">🔥 Doğalgaz</span><div class="efactor">2.02 kg CO₂/m³</div></div>
+        <div class="etype-btn"><span class="ename">🥩 Etli Öğün</span><div class="efactor">6.0 kg CO₂/öğün</div></div>
+        <div class="etype-btn"><span class="ename">🥗 Vegan Öğün</span><div class="efactor">0.9 kg CO₂/öğün</div></div>
+        <div class="etype-btn"><span class="ename">🗑️ Plastik Atık</span><div class="efactor">2.38 kg CO₂/kg</div></div>
+        <div class="etype-btn"><span class="ename">💧 Su</span><div class="efactor">0.344 kg CO₂/m³</div></div>
+        <div class="etype-btn"><span class="ename">📱 Dijital</span><div class="efactor">0.036 kg CO₂/saat</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- =========================================================
+     PAGE 9: KARBON BORSA + DUYGU HARİTASI + SOSYAL SÖZLEŞME
+     ========================================================= -->
+<div>
+  <p class="page-label">📱 Sayfa 9 — Karbon Borsası</p>
+  <div class="page" style="min-height:800px">
+    <div class="status-bar"><span>🌿 Yeşil Kampüs</span><span>🌳 Ağaç • 4850 XP</span></div>
+    <div class="scroll-area">
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="back-btn">←</button>
+        <div><h3 style="font-family:var(--display);font-size:16px;font-weight:900;color:var(--text)">💱 Karbon Borsası</h3><p style="font-size:11px;color:var(--text2)">Kampüs mikro karbon kredi ticareti</p></div>
+      </div>
+
+      <div class="card card-glow-gold">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+          <div>
+            <div style="font-size:10px;color:var(--text2)">Güncel Fiyat</div>
+            <div class="exchange-price">₺5.65</div>
+            <div class="exchange-up">▲ +0.35 (6.2%)</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:10px;color:var(--text2)">Hacim</div>
+            <div style="font-family:var(--display);font-size:18px;font-weight:700;color:var(--text)">142</div>
+            <div style="font-size:10px;color:var(--text2)">kredi/gün</div>
+          </div>
+        </div>
+        <!-- Exchange Chart -->
+        <svg viewBox="0 0 280 100" class="chart-svg" style="height:100px">
+          <defs>
+            <linearGradient id="exGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="rgba(76,175,80,0.3)"/>
+              <stop offset="100%" stop-color="rgba(76,175,80,0)"/>
+            </linearGradient>
+          </defs>
+          <path d="M0,70 C20,65 40,60 60,55 S90,45 110,50 S140,65 160,58 S190,42 210,38 S240,30 260,25 L280,22 L280,90 L0,90 Z" fill="url(#exGrad)"/>
+          <path d="M0,70 C20,65 40,60 60,55 S90,45 110,50 S140,65 160,58 S190,42 210,38 S240,30 260,25 L280,22" fill="none" stroke="var(--g500)" stroke-width="2.5"/>
+          <circle cx="280" cy="22" r="5" fill="var(--g500)"/>
+        </svg>
+      </div>
+
+      <div class="grid2">
+        <button class="btn-primary">📈 Al</button>
+        <button class="btn-outline">📉 Sat</button>
+      </div>
+
+      <div class="card">
+        <div class="sec-title"><div><h3>📋 Açık Teklifler</h3></div></div>
+        <div class="row">
+          <div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--text)">Ali K.</div><div style="font-size:10px;color:var(--text2)">5 kredi • Satış</div></div>
+          <div style="font-size:12px;font-weight:700;color:var(--red)">₺5.80</div>
+        </div>
+        <div class="row">
+          <div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--text)">Zeynep D.</div><div style="font-size:10px;color:var(--text2)">10 kredi • Alış</div></div>
+          <div style="font-size:12px;font-weight:700;color:var(--g700)">₺5.20</div>
+        </div>
+        <div class="row" style="border:none">
+          <div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--text)">Can M.</div><div style="font-size:10px;color:var(--text2)">3 kredi • Satış</div></div>
+          <div style="font-size:12px;font-weight:700;color:var(--red)">₺6.10</div>
+        </div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="tab-btn"><span>🏠</span><span>Ana Sayfa</span></div>
+      <div class="tab-btn active"><span>🚀</span><span>Keşfet</span></div>
+      <div style="flex:1;display:flex;justify-content:center"><div class="fab">+</div></div>
+      <div class="tab-btn"><span>📈</span><span>Analitik</span></div>
+      <div class="tab-btn"><span>👤</span><span>Profil</span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- =========================================================
+     PAGE 10: DUYGU-KARBON + SOSYAL SÖZLEŞME + KARBON SENFONİSİ
+     ========================================================= -->
+<div>
+  <p class="page-label">📱 Sayfa 10 — Duygu-Karbon Haritası</p>
+  <div class="page" style="min-height:760px">
+    <div class="status-bar"><span>🌿 Yeşil Kampüs</span><span>🌳 Ağaç • 4850 XP</span></div>
+    <div class="scroll-area">
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="back-btn">←</button>
+        <div><h3 style="font-family:var(--display);font-size:16px;font-weight:900;color:var(--text)">🌊 Duygu-Karbon Haritası</h3><p style="font-size:11px;color:var(--text2)">Mutluluk ve karbon korelasyonu: r = -0.72</p></div>
+      </div>
+
+      <div class="card-grad">
+        <div style="text-align:center;margin-bottom:14px">
+          <div style="font-size:14px;font-weight:700;color:var(--text)">💡 Düşük karbon = Yüksek mutluluk</div>
+          <div style="font-size:11px;color:var(--text2)">Anonim kampüs verisine dayalı korelasyon</div>
+        </div>
+        <div class="emotion-row">
+          <div style="font-size:26px">😊</div>
+          <div style="flex:1">
+            <div style="font-size:12px;font-weight:600;color:var(--text)">Kütüphane</div>
+            <div class="progress-track" style="margin-top:4px"><div class="progress-fill lvl-bar-m" style="width:72%"></div></div>
+          </div>
+          <div style="text-align:right"><div style="font-size:12px;font-weight:700;color:var(--g700)">1.8 kg</div><div style="font-size:9px;color:var(--text2)">45 kişi</div></div>
+        </div>
+        <div class="emotion-row">
+          <div style="font-size:26px">😄</div>
+          <div style="flex:1">
+            <div style="font-size:12px;font-weight:600;color:var(--text)">Kafeterya</div>
+            <div class="progress-track" style="margin-top:4px"><div class="progress-fill lvl-bar-m" style="width:81%"></div></div>
+          </div>
+          <div style="text-align:right"><div style="font-size:12px;font-weight:700;color:var(--orange)">4.2 kg</div><div style="font-size:9px;color:var(--text2)">120 kişi</div></div>
+        </div>
+        <div class="emotion-row">
+          <div style="font-size:26px">😐</div>
+          <div style="flex:1">
+            <div style="font-size:12px;font-weight:600;color:var(--text)">Laboratuvar</div>
+            <div class="progress-track" style="margin-top:4px"><div class="progress-fill lvl-bar-o" style="width:55%"></div></div>
+          </div>
+          <div style="text-align:right"><div style="font-size:12px;font-weight:700;color:var(--orange)">3.1 kg</div><div style="font-size:9px;color:var(--text2)">30 kişi</div></div>
+        </div>
+        <div class="emotion-row">
+          <div style="font-size:26px">🤩</div>
+          <div style="flex:1">
+            <div style="font-size:12px;font-weight:600;color:var(--text)">Spor Salonu</div>
+            <div class="progress-track" style="margin-top:4px"><div class="progress-fill lvl-bar-m" style="width:88%"></div></div>
+          </div>
+          <div style="text-align:right"><div style="font-size:12px;font-weight:700;color:var(--g700)">0.5 kg</div><div style="font-size:9px;color:var(--text2)">60 kişi</div></div>
+        </div>
+        <div class="emotion-row">
+          <div style="font-size:26px">😤</div>
+          <div style="flex:1">
+            <div style="font-size:12px;font-weight:600;color:var(--text)">Otopark</div>
+            <div class="progress-track" style="margin-top:4px"><div class="progress-fill lvl-bar-r" style="width:42%"></div></div>
+          </div>
+          <div style="text-align:right"><div style="font-size:12px;font-weight:700;color:var(--red)">8.5 kg</div><div style="font-size:9px;color:var(--text2)">200 kişi</div></div>
+        </div>
+        <div class="emotion-row" style="border:none">
+          <div style="font-size:26px">🥰</div>
+          <div style="flex:1">
+            <div style="font-size:12px;font-weight:600;color:var(--text)">Bahçe</div>
+            <div class="progress-track" style="margin-top:4px"><div class="progress-fill lvl-bar-m" style="width:91%"></div></div>
+          </div>
+          <div style="text-align:right"><div style="font-size:12px;font-weight:700;color:var(--g700)">0.2 kg</div><div style="font-size:9px;color:var(--text2)">80 kişi</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="tab-btn"><span>🏠</span><span>Ana Sayfa</span></div>
+      <div class="tab-btn active"><span>🚀</span><span>Keşfet</span></div>
+      <div style="flex:1;display:flex;justify-content:center"><div class="fab">+</div></div>
+      <div class="tab-btn"><span>📈</span><span>Analitik</span></div>
+      <div class="tab-btn"><span>👤</span><span>Profil</span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- =========================================================
+     PAGE 11: SOSYAL SÖZLEŞME + KARBON SENFONİSİ + KARBON HAFIZA + BIO-SYNC
+     ========================================================= -->
+<div>
+  <p class="page-label">📱 Sayfa 11 — Sosyal Sözleşme</p>
+  <div class="page" style="min-height:760px">
+    <div class="status-bar"><span>🌿 Yeşil Kampüs</span><span>🌳 Ağaç • 4850 XP</span></div>
+    <div class="scroll-area">
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="back-btn">←</button>
+        <div><h3 style="font-family:var(--display);font-size:16px;font-weight:900;color:var(--text)">🤝 Sosyal Sözleşmeler</h3><p style="font-size:11px;color:var(--text2)">Karbon azaltma taahhütlerin</p></div>
+      </div>
+
+      <button class="btn-dashed">➕ Yeni Sözleşme Oluştur</button>
+
+      <div class="ctr-card" style="border-left:4px solid var(--g500)">
+        <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px">🚲 Bisiklet Taahhüdü</div>
+        <div class="progress-wrap">
+          <div class="progress-label"><span>İlerleme</span><strong>67%</strong></div>
+          <div class="progress-track"><div class="progress-fill lvl-bar-o" style="width:67%"></div></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:8px">
+          <div style="font-size:10px;color:var(--text2)">👥 Ali, Ayşe, Mehmet</div>
+          <div style="font-size:10px;color:var(--text2)">⏰ 12 gün kaldı</div>
+        </div>
+        <div style="font-size:10px;color:var(--g700);font-weight:600;margin-top:4px">🏆 500 XP + Rozet</div>
+      </div>
+
+      <div class="ctr-card" style="border-left:4px solid var(--orange)">
+        <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px">🥗 Vegan Hafta</div>
+        <div class="progress-wrap">
+          <div class="progress-label"><span>İlerleme</span><strong>45%</strong></div>
+          <div class="progress-track"><div class="progress-fill lvl-bar-o" style="width:45%"></div></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:8px">
+          <div style="font-size:10px;color:var(--text2)">👥 Zeynep, Can</div>
+          <div style="font-size:10px;color:var(--text2)">⏰ 5 gün kaldı</div>
+        </div>
+        <div style="font-size:10px;color:var(--g700);font-weight:600;margin-top:4px">🏆 300 XP</div>
+      </div>
+
+      <div class="ctr-card" style="border-left:4px solid var(--g500)">
+        <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px">⚡ Enerji Tasarrufu</div>
+        <div class="progress-wrap">
+          <div class="progress-label"><span>İlerleme</span><strong>82%</strong></div>
+          <div class="progress-track"><div class="progress-fill lvl-bar-m" style="width:82%"></div></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:8px">
+          <div style="font-size:10px;color:var(--text2)">👥 Ali, Fatma, Burak, Elif</div>
+          <div style="font-size:10px;color:var(--text2)">⏰ 3 gün kaldı</div>
+        </div>
+        <div style="font-size:10px;color:var(--g700);font-weight:600;margin-top:4px">🏆 750 XP + Ağaç Dikimi</div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="tab-btn"><span>🏠</span><span>Ana Sayfa</span></div>
+      <div class="tab-btn active"><span>🚀</span><span>Keşfet</span></div>
+      <div style="flex:1;display:flex;justify-content:center"><div class="fab">+</div></div>
+      <div class="tab-btn"><span>📈</span><span>Analitik</span></div>
+      <div class="tab-btn"><span>👤</span><span>Profil</span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- =========================================================
+     PAGE 12: KARBON SENFONİSİ
+     ========================================================= -->
+<div>
+  <p class="page-label">📱 Sayfa 12 — Karbon Senfonisi</p>
+  <div class="page" style="min-height:720px">
+    <div class="status-bar"><span>🌿 Yeşil Kampüs</span><span>🌳 Ağaç • 4850 XP</span></div>
+    <div class="scroll-area">
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="back-btn">←</button>
+        <div><h3 style="font-family:var(--display);font-size:16px;font-weight:900;color:var(--text)">🎵 Karbon Senfonisi</h3><p style="font-size:11px;color:var(--text2)">Emisyon verilerin müziğe dönüştü</p></div>
+      </div>
+
+      <!-- Dark music card -->
+      <div style="background:linear-gradient(135deg,#1A1A2E,#16213E);border-radius:var(--r);padding:18px;color:#fff">
+        <div style="text-align:center;margin-bottom:14px">
+          <div style="font-family:var(--display);font-size:15px;font-weight:700">🎼 Bu Haftanın Melodisi</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.55);margin-top:3px">🎭 Dramatik (yüksek emisyon)</div>
+        </div>
+        <div style="display:flex;align-items:flex-end;justify-content:center;gap:8px;height:110px;padding:0 8px">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div class="note-bar" style="height:55px;background:linear-gradient(180deg,#EF5350,transparent)"></div>
+            <span style="font-size:8px;color:#aaa">E4</span><span style="font-size:8px;color:#666">Pzt</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div class="note-bar" style="height:38px;background:linear-gradient(180deg,#FFB74D,transparent)"></div>
+            <span style="font-size:8px;color:#aaa">C4</span><span style="font-size:8px;color:#666">Sal</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div class="note-bar" style="height:68px;background:linear-gradient(180deg,#EF5350,transparent)"></div>
+            <span style="font-size:8px;color:#aaa">G4</span><span style="font-size:8px;color:#666">Çar</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div class="note-bar" style="height:48px;background:linear-gradient(180deg,#FFB74D,transparent)"></div>
+            <span style="font-size:8px;color:#aaa">D4</span><span style="font-size:8px;color:#666">Per</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div class="note-bar" style="height:82px;background:linear-gradient(180deg,#EF5350,transparent)"></div>
+            <span style="font-size:8px;color:#aaa">A4</span><span style="font-size:8px;color:#666">Cum</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div class="note-bar" style="height:30px;background:linear-gradient(180deg,#66BB6A,transparent)"></div>
+            <span style="font-size:8px;color:#aaa">C4</span><span style="font-size:8px;color:#666">Cmt</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div class="note-bar" style="height:22px;background:linear-gradient(180deg,#66BB6A,transparent)"></div>
+            <span style="font-size:8px;color:#aaa">B3</span><span style="font-size:8px;color:#666">Paz</span>
+          </div>
+        </div>
+      </div>
+
+      <button style="width:100%;padding:14px;border-radius:var(--r);border:none;cursor:pointer;background:linear-gradient(135deg,#E91E63,#9C27B0);color:#fff;font-weight:700;font-size:14px;font-family:var(--font)">
+        ▶️ Senfonini Dinle
+      </button>
+
+      <div class="card">
+        <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:6px">📊 Ses Haritası</div>
+        <div style="font-size:11px;color:var(--text2)">Yüksek emisyon = Yüksek notalar (dramatik) • Düşük emisyon = Alçak notalar (huzurlu)</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:4px">Tempo: 115 BPM • Ton: A Minör</div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="tab-btn"><span>🏠</span><span>Ana Sayfa</span></div>
+      <div class="tab-btn active"><span>🚀</span><span>Keşfet</span></div>
+      <div style="flex:1;display:flex;justify-content:center"><div class="fab">+</div></div>
+      <div class="tab-btn"><span>📈</span><span>Analitik</span></div>
+      <div class="tab-btn"><span>👤</span><span>Profil</span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- =========================================================
+     PAGE 13: KARBON HAFIZA + BIO-SYNC
+     ========================================================= -->
+<div>
+  <p class="page-label">📱 Sayfa 13 — Karbon Hafıza & Bio-Sync</p>
+  <div class="page" style="min-height:870px">
+    <div class="status-bar"><span>🌿 Yeşil Kampüs</span><span>🌳 Ağaç • 4850 XP</span></div>
+    <div class="scroll-area">
+
+      <!-- Back to Memory -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">
+        <button class="back-btn">←</button>
+        <div><h3 style="font-family:var(--display);font-size:16px;font-weight:900;color:var(--text)">🧠 Karbon Hafıza</h3><p style="font-size:11px;color:var(--text2)">AI geçmiş verileri davranışından tahmin eder</p></div>
+      </div>
+
+      <div class="card" style="background:rgba(255,152,0,0.06);border-left:4px solid var(--orange)">
+        <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px">📅 Eksik Gün: 14 Şubat 2026</div>
+        <div class="mem-row">
+          <div style="font-size:12px">🚗 Ulaşım</div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:12px;font-weight:700;color:var(--text)">2.4 kg</span>
+            <span class="conf-chip" style="background:rgba(76,175,80,0.15);color:var(--g700)">82% güven</span>
+          </div>
+        </div>
+        <div class="mem-row">
+          <div style="font-size:12px">⚡ Enerji</div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:12px;font-weight:700;color:var(--text)">3.1 kg</span>
+            <span class="conf-chip" style="background:rgba(255,152,0,0.15);color:var(--orange)">75% güven</span>
+          </div>
+        </div>
+        <div class="mem-row">
+          <div style="font-size:12px">🍽️ Beslenme</div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:12px;font-weight:700;color:var(--text)">4.8 kg</span>
+            <span class="conf-chip" style="background:rgba(255,152,0,0.15);color:var(--orange)">68% güven</span>
+          </div>
+        </div>
+        <div class="mem-row" style="border:none">
+          <div style="font-size:12px">💧 Su</div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:12px;font-weight:700;color:var(--text)">0.3 kg</span>
+            <span class="conf-chip" style="background:rgba(76,175,80,0.15);color:var(--g700)">90% güven</span>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--text2);margin-top:10px">🧠 12 benzer Cuma gününe dayalı tahmin</div>
+      </div>
+
+      <button style="width:100%;padding:12px;border-radius:var(--r);border:none;cursor:pointer;background:var(--orange);color:#fff;font-weight:700;font-size:13px;font-family:var(--font)">
+        ✅ Tahmini Onayla ve Kaydet
+      </button>
+
+      <!-- Divider -->
+      <div style="border-top:2px dashed var(--g100);padding-top:4px"></div>
+
+      <!-- Bio Sync -->
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="back-btn">←</button>
+        <div><h3 style="font-family:var(--display);font-size:16px;font-weight:900;color:var(--text)">💚 Bio-Senkronizasyon</h3><p style="font-size:11px;color:var(--text2)">Sağlığın = Gezegenin sağlığı</p></div>
+      </div>
+
+      <div class="card" style="box-shadow:0 0 22px rgba(38,166,154,0.2),var(--shadow)">
+        <div class="grid2">
+          <div class="bio-stat">
+            <div style="font-size:22px">👣</div>
+            <div style="font-family:var(--display);font-size:18px;font-weight:900;color:var(--text)">8,432</div>
+            <div style="font-size:9px;color:var(--text2)">6.5 km yürüyüş</div>
+          </div>
+          <div class="bio-stat">
+            <div style="font-size:22px">❤️</div>
+            <div style="font-family:var(--display);font-size:18px;font-weight:900;color:var(--text)">72</div>
+            <div style="font-size:9px;color:var(--text2)">bpm ortalama</div>
+          </div>
+          <div class="bio-stat">
+            <div style="font-size:22px">😴</div>
+            <div style="font-family:var(--display);font-size:18px;font-weight:900;color:var(--text)">7.5</div>
+            <div style="font-size:9px;color:var(--text2)">saat uyku</div>
+          </div>
+          <div class="bio-stat">
+            <div style="font-size:22px">🏃</div>
+            <div style="font-family:var(--display);font-size:18px;font-weight:900;color:var(--text)">45</div>
+            <div style="font-size:9px;color:var(--text2)">aktif dakika</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px">🔗 Karbon-Sağlık Bağlantısı</div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+          <div style="font-size:11px;color:var(--text2)">Yürüyerek tasarruf</div>
+          <div style="font-size:12px;font-weight:700;color:var(--g700)">1.11 kg CO₂</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+          <div style="font-size:11px;color:var(--text2)">Sağlık Skoru</div>
+          <div style="font-size:12px;font-weight:700;color:var(--teal)">78/100</div>
+        </div>
+        <div style="display:flex;justify-content:space-between">
+          <div style="font-size:11px;color:var(--text2)">Yeşil Skor</div>
+          <div style="font-size:12px;font-weight:700;color:var(--g700)">72/100</div>
+        </div>
+        <div style="margin-top:10px;padding:8px 12px;background:rgba(76,175,80,0.1);border-radius:8px;font-size:11px;color:var(--g800);text-align:center;font-weight:600">
+          💚 Sağlıklı yaşam = Düşük karbon ayak izi
+        </div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="tab-btn"><span>🏠</span><span>Ana Sayfa</span></div>
+      <div class="tab-btn active"><span>🚀</span><span>Keşfet</span></div>
+      <div style="flex:1;display:flex;justify-content:center"><div class="fab">+</div></div>
+      <div class="tab-btn"><span>📈</span><span>Analitik</span></div>
+      <div class="tab-btn"><span>👤</span><span>Profil</span></div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

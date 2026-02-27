@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yeşil Kampüs — Proje Şeması</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --g900: #0D3B1E; --g800: #1B5E20; --g700: #2E7D32; --g600: #388E3C;
+  --g500: #4CAF50; --g400: #66BB6A; --g300: #81C784; --g200: #A5D6A7; --g100: #C8E6C9;
+  --orange: #FF9800; --red: #EF5350; --blue: #42A5F5; --purple: #AB47BC;
+  --teal: #26A69A; --gold: #FFD700;
+  --dark: #0A1A0C; --card: #111E12; --card2: #162118;
+  --border: rgba(76,175,80,0.18);
+  --text: #E8F5E9; --text2: #A5D6A7; --text3: #5A8F5C;
+  --font: 'Outfit', sans-serif;
+  --mono: 'Space Mono', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--dark);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* NOISE TEXTURE */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0;
+}
+
+/* GRID BG */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: linear-gradient(rgba(76,175,80,0.04) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(76,175,80,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none; z-index: 0;
+}
+
+.wrapper { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: 0 32px 80px; }
+
+/* ── HEADER ── */
+.header {
+  text-align: center;
+  padding: 64px 0 48px;
+  position: relative;
+}
+.header-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(76,175,80,0.12); border: 1px solid rgba(76,175,80,0.3);
+  border-radius: 20px; padding: 6px 16px;
+  font-size: 11px; font-weight: 600; color: var(--g400); letter-spacing: 2px;
+  text-transform: uppercase; margin-bottom: 20px;
+}
+.header h1 {
+  font-size: clamp(36px, 6vw, 64px);
+  font-weight: 800;
+  line-height: 1.1;
+  background: linear-gradient(135deg, #A5D6A7 0%, #4CAF50 40%, #81C784 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 12px;
+}
+.header p {
+  font-size: 16px; color: var(--text2); font-weight: 400; max-width: 600px; margin: 0 auto;
+}
+.header-glow {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  width: 600px; height: 300px;
+  background: radial-gradient(ellipse, rgba(76,175,80,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ── SECTION ── */
+.section { margin-bottom: 64px; }
+.section-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 28px; padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.section-num {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--g700), var(--g500));
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 12px; font-weight: 700; color: #fff;
+  flex-shrink: 0;
+}
+.section-header h2 {
+  font-size: 22px; font-weight: 700; color: var(--text);
+}
+.section-header span {
+  font-size: 13px; color: var(--text3); font-weight: 400; margin-left: 4px;
+}
+
+/* ── ARCHITECTURE ── */
+.arch-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+}
+.arch-layer {
+  display: flex; gap: 12px;
+  padding: 20px 24px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card);
+  position: relative;
+  transition: border-color 0.3s;
+}
+.arch-layer:hover { border-color: rgba(76,175,80,0.4); }
+.arch-layer + .arch-layer { margin-top: 0; }
+
+.arch-connector {
+  display: flex; justify-content: center; align-items: center;
+  height: 36px; gap: 0; position: relative;
+}
+.arch-connector::before {
+  content: '';
+  position: absolute; left: 50%; top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, rgba(76,175,80,0.4), rgba(76,175,80,0.1));
+}
+.arch-connector-label {
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 3px 12px;
+  font-size: 10px; font-weight: 600; color: var(--g400);
+  font-family: var(--mono); z-index: 1;
+  letter-spacing: 0.5px;
+}
+
+.arch-label {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--text3);
+  align-self: center; flex-shrink: 0;
+  margin-right: 8px;
+}
+.arch-cards { display: flex; gap: 10px; flex: 1; flex-wrap: wrap; }
+.arch-card {
+  flex: 1; min-width: 140px;
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px 14px;
+  transition: all 0.2s;
+}
+.arch-card:hover {
+  border-color: rgba(76,175,80,0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.arch-card .ac-icon { font-size: 20px; margin-bottom: 6px; }
+.arch-card .ac-name { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.arch-card .ac-sub { font-size: 10px; color: var(--text3); line-height: 1.4; }
+.arch-card .ac-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+.ac-tag {
+  font-size: 9px; font-weight: 600; font-family: var(--mono);
+  padding: 2px 6px; border-radius: 4px;
+  background: rgba(76,175,80,0.12); color: var(--g300);
+  border: 1px solid rgba(76,175,80,0.2);
+}
+.ac-tag.orange { background: rgba(255,152,0,0.12); color: #FFB74D; border-color: rgba(255,152,0,0.2); }
+.ac-tag.blue { background: rgba(66,165,245,0.12); color: #90CAF9; border-color: rgba(66,165,245,0.2); }
+.ac-tag.purple { background: rgba(171,71,188,0.12); color: #CE93D8; border-color: rgba(171,71,188,0.2); }
+
+/* ── FOLDER TREE ── */
+.tree-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media(max-width:900px){ .tree-grid { grid-template-columns: 1fr; } }
+.tree-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px; padding: 20px 20px 16px;
+}
+.tree-card-title {
+  font-family: var(--mono); font-size: 13px; font-weight: 700;
+  color: var(--g400); margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+.tree-card-title .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--g500); box-shadow: 0 0 6px var(--g500);
+}
+.tree-item {
+  display: flex; align-items: flex-start; gap: 0;
+  padding: 2px 0;
+  font-family: var(--mono); font-size: 11px;
+  color: var(--text2);
+  line-height: 1.5;
+}
+.tree-item .ti-prefix { color: var(--text3); flex-shrink: 0; white-space: pre; }
+.tree-item .ti-name { color: var(--text); font-weight: 700; }
+.tree-item .ti-name.dir { color: var(--g300); }
+.tree-item .ti-name.file { color: #90CAF9; }
+.tree-item .ti-name.config { color: #FFB74D; }
+.tree-item .ti-desc { color: var(--text3); font-size: 10px; margin-left: 6px; flex: 1; }
+
+/* ── DATA FLOW ── */
+.flow-container {
+  display: flex; align-items: stretch; gap: 0;
+  overflow-x: auto; padding-bottom: 8px;
+}
+.flow-step {
+  flex: 1; min-width: 160px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px; padding: 16px;
+  display: flex; flex-direction: column; gap: 8px;
+  transition: all 0.2s;
+}
+.flow-step:hover {
+  border-color: rgba(76,175,80,0.5);
+  box-shadow: 0 0 20px rgba(76,175,80,0.1);
+}
+.flow-arrow {
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 6px; flex-shrink: 0; color: var(--text3); font-size: 18px;
+}
+.flow-icon { font-size: 24px; }
+.flow-name { font-size: 13px; font-weight: 700; color: var(--text); }
+.flow-detail { font-size: 10px; color: var(--text3); line-height: 1.5; }
+.flow-badge {
+  display: inline-block; font-size: 9px; font-family: var(--mono);
+  padding: 2px 6px; border-radius: 4px; font-weight: 700;
+  background: rgba(76,175,80,0.12); color: var(--g400);
+  border: 1px solid rgba(76,175,80,0.2);
+}
+
+/* ── API GROUPS ── */
+.api-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+.api-group {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px; overflow: hidden;
+}
+.api-group-header {
+  padding: 10px 14px;
+  background: rgba(76,175,80,0.08);
+  border-bottom: 1px solid var(--border);
+  font-size: 12px; font-weight: 700; color: var(--g300);
+  display: flex; align-items: center; gap: 8px;
+}
+.api-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 14px;
+  border-bottom: 1px solid rgba(76,175,80,0.06);
+  font-size: 11px;
+}
+.api-row:last-child { border-bottom: none; }
+.method {
+  font-family: var(--mono); font-size: 9px; font-weight: 700;
+  padding: 2px 6px; border-radius: 4px; flex-shrink: 0; min-width: 42px;
+  text-align: center;
+}
+.method.get { background: rgba(76,175,80,0.2); color: var(--g300); }
+.method.post { background: rgba(255,152,0,0.2); color: #FFB74D; }
+.method.del { background: rgba(239,83,80,0.2); color: #EF9A9A; }
+.method.put { background: rgba(66,165,245,0.2); color: #90CAF9; }
+.api-path { font-family: var(--mono); font-size: 10px; color: #90CAF9; flex: 1; word-break: break-all; }
+.api-desc { font-size: 10px; color: var(--text3); }
+
+/* ── SPRINT ── */
+.sprint-list { display: flex; flex-direction: column; gap: 10px; }
+.sprint-row {
+  display: grid;
+  grid-template-columns: 52px 1fr 1fr 140px;
+  gap: 12px; align-items: center;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px 16px;
+  transition: all 0.2s;
+}
+.sprint-row:hover {
+  border-color: rgba(76,175,80,0.35);
+  background: var(--card2);
+}
+.sprint-num {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--g800), var(--g600));
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 14px; font-weight: 700; color: #fff;
+  box-shadow: 0 0 12px rgba(76,175,80,0.25);
+}
+.sprint-col-title { font-size: 10px; font-weight: 700; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+.sprint-col-val { font-size: 12px; color: var(--text2); line-height: 1.5; }
+.sprint-output {
+  background: rgba(76,175,80,0.1);
+  border: 1px solid rgba(76,175,80,0.2);
+  border-radius: 8px; padding: 8px 10px;
+  font-size: 11px; font-weight: 600; color: var(--g300); text-align: center;
+}
+
+/* ── DB TABLES ── */
+.db-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+.db-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px; overflow: hidden;
+}
+.db-card-header {
+  padding: 10px 14px;
+  background: linear-gradient(135deg, rgba(27,94,32,0.4), rgba(46,125,50,0.2));
+  border-bottom: 1px solid var(--border);
+  font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--g300);
+  display: flex; align-items: center; gap: 8px;
+}
+.db-row {
+  display: flex; align-items: center; gap: 8px; padding: 5px 14px;
+  border-bottom: 1px solid rgba(76,175,80,0.05); font-size: 11px;
+}
+.db-row:last-child { border-bottom: none; }
+.db-pk { font-size: 8px; background: rgba(255,215,0,0.2); color: #FFD700; padding: 1px 5px; border-radius: 3px; font-family: var(--mono); font-weight: 700; flex-shrink: 0; }
+.db-fk { font-size: 8px; background: rgba(66,165,245,0.2); color: #90CAF9; padding: 1px 5px; border-radius: 3px; font-family: var(--mono); font-weight: 700; flex-shrink: 0; }
+.db-field { font-family: var(--mono); color: var(--text2); flex: 1; }
+.db-type { font-size: 9px; color: var(--text3); font-family: var(--mono); }
+
+/* ── TEST MATRIX ── */
+.test-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media(max-width:900px){ .test-grid { grid-template-columns: 1fr; } }
+.test-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px; padding: 18px;
+}
+.test-card-title {
+  font-size: 14px; font-weight: 700; color: var(--text);
+  display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
+}
+.test-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(76,175,80,0.07); }
+.test-row:last-child { border-bottom: none; }
+.test-icon { font-size: 18px; flex-shrink: 0; }
+.test-info { flex: 1; }
+.test-name { font-size: 12px; font-weight: 600; color: var(--text); }
+.test-tool { font-size: 10px; color: var(--text3); font-family: var(--mono); }
+.test-target { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
+.t-green { background: rgba(76,175,80,0.15); color: var(--g300); }
+.t-orange { background: rgba(255,152,0,0.15); color: #FFB74D; }
+.t-blue { background: rgba(66,165,245,0.15); color: #90CAF9; }
+
+/* ── LEGEND ── */
+.legend {
+  display: flex; gap: 20px; flex-wrap: wrap;
+  padding: 14px 18px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px; margin-bottom: 20px;
+}
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text2); }
+.legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+/* ANIMATIONS */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.section { animation: fadeUp 0.5s ease both; }
+.section:nth-child(1) { animation-delay: 0.1s; }
+.section:nth-child(2) { animation-delay: 0.15s; }
+.section:nth-child(3) { animation-delay: 0.2s; }
+.section:nth-child(4) { animation-delay: 0.25s; }
+.section:nth-child(5) { animation-delay: 0.3s; }
+.section:nth-child(6) { animation-delay: 0.35s; }
+.section:nth-child(7) { animation-delay: 0.4s; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--dark); }
+::-webkit-scrollbar-thumb { background: var(--g800); border-radius: 3px; }
+
+/* NAV */
+.top-nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(10,26,12,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 32px;
+  display: flex; gap: 6px; overflow-x: auto;
+}
+.nav-item {
+  white-space: nowrap;
+  padding: 6px 14px; border-radius: 8px;
+  font-size: 12px; font-weight: 600; color: var(--text3);
+  cursor: pointer; border: none; background: transparent;
+  transition: all 0.2s; text-decoration: none; font-family: var(--font);
+}
+.nav-item:hover { background: rgba(76,175,80,0.12); color: var(--g300); }
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <a class="nav-item" href="#mimari">🏗 Mimari</a>
+  <a class="nav-item" href="#klasor">📁 Klasör</a>
+  <a class="nav-item" href="#akis">🔄 Veri Akışı</a>
+  <a class="nav-item" href="#veritabani">🗄 Veritabanı</a>
+  <a class="nav-item" href="#api">🔌 API</a>
+  <a class="nav-item" href="#sprint">🚀 Sprint</a>
+  <a class="nav-item" href="#test">🧪 Test</a>
+</nav>
+
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-glow"></div>
+    <div class="header-badge">🌿 Proje Şeması v1.0</div>
+    <h1>Yeşil Kampüs</h1>
+    <p>Karbon Ayak İzi Takip & Gamification Platformu — Teknik Mimari Şeması</p>
+  </div>
+
+  <!-- 1. MİMARİ KATMANLAR -->
+  <div class="section" id="mimari">
+    <div class="section-header">
+      <div class="section-num">01</div>
+      <h2>Mimari Katmanlar <span>— React Native · Django · PostgreSQL</span></h2>
+    </div>
+
+    <div class="arch-wrapper">
+
+      <!-- KATMAN: MOBILE -->
+      <div class="arch-layer" style="border-color:rgba(66,165,245,0.25)">
+        <div class="arch-label" style="color:#5C8EBF">CLIENT</div>
+        <div class="arch-cards">
+          <div class="arch-card">
+            <div class="ac-icon">📱</div>
+            <div class="ac-name">React Native (Expo)</div>
+            <div class="ac-sub">iOS & Android mobil uygulama. TypeScript ile tip güvenli.</div>
+            <div class="ac-tags">
+              <span class="ac-tag blue">TypeScript</span>
+              <span class="ac-tag blue">Redux Toolkit</span>
+              <span class="ac-tag blue">RTK Query</span>
+            </div>
+          </div>
+          <div class="arch-card">
+            <div class="ac-icon">🧭</div>
+            <div class="ac-name">React Navigation</div>
+            <div class="ac-sub">BottomTab + Stack navigatörler. 13 ekran arası geçiş.</div>
+            <div class="ac-tags">
+              <span class="ac-tag blue">5 Tab</span>
+              <span class="ac-tag blue">Stack</span>
+            </div>
+          </div>
+          <div class="arch-card">
+            <div class="ac-icon">🎨</div>
+            <div class="ac-name">UI / UX Katmanı</div>
+            <div class="ac-sub">Reanimated animasyonlar, SVG DNA grafiği, Victory Native charts.</div>
+            <div class="ac-tags">
+              <span class="ac-tag blue">Reanimated 3</span>
+              <span class="ac-tag blue">SVG</span>
+              <span class="ac-tag blue">Lottie</span>
+            </div>
+          </div>
+          <div class="arch-card">
+            <div class="ac-icon">💾</div>
+            <div class="ac-name">Lokal Depolama</div>
+            <div class="ac-sub">AsyncStorage ile offline emisyon kuyruğu ve token saklama.</div>
+            <div class="ac-tags">
+              <span class="ac-tag blue">AsyncStorage</span>
+              <span class="ac-tag blue">Offline</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-connector">
+        <span class="arch-connector-label">HTTPS / REST + WebSocket (JWT Bearer)</span>
+      </div>
+
+      <!-- KATMAN: BACKEND -->
+      <div class="arch-layer" style="border-color:rgba(76,175,80,0.25)">
+        <div class="arch-label" style="color:var(--g600)">BACKEND</div>
+        <div class="arch-cards">
+          <div class="arch-card">
+            <div class="ac-icon">🐍</div>
+            <div class="ac-name">Django 5 + DRF</div>
+            <div class="ac-sub">RESTful API. JWT auth. Swagger dokümantasyonu.</div>
+            <div class="ac-tags">
+              <span class="ac-tag">Python 3.12</span>
+              <span class="ac-tag">DRF 3.15</span>
+              <span class="ac-tag">JWT</span>
+            </div>
+          </div>
+          <div class="arch-card">
+            <div class="ac-icon">🤖</div>
+            <div class="ac-name">AI / ML Modülleri</div>
+            <div class="ac-sub">Karbon hafıza tahmini, DNA profili, ikiz simülasyon, senaryo projeksiyonu.</div>
+            <div class="ac-tags">
+              <span class="ac-tag">scikit-learn</span>
+              <span class="ac-tag">Pandas</span>
+              <span class="ac-tag">NumPy</span>
+            </div>
+          </div>
+          <div class="arch-card">
+            <div class="ac-icon">⚡</div>
+            <div class="ac-name">Celery + Redis</div>
+            <div class="ac-sub">Async görevler: bildirim, skor hesaplama, haftalık özet gönderimi.</div>
+            <div class="ac-tags">
+              <span class="ac-tag">Celery 5</span>
+              <span class="ac-tag">Redis 7</span>
+              <span class="ac-tag">Beat</span>
+            </div>
+          </div>
+          <div class="arch-card">
+            <div class="ac-icon">🔌</div>
+            <div class="ac-name">Django Channels</div>
+            <div class="ac-sub">WebSocket ile gerçek zamanlı piyasa fiyatı ve bildirim akışı.</div>
+            <div class="ac-tags">
+              <span class="ac-tag">WebSocket</span>
+              <span class="ac-tag">ASGI</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-connector">
+        <span class="arch-connector-label">Django ORM / psycopg2</span>
+      </div>
+
+      <!-- KATMAN: VERİTABANI -->
+      <div class="arch-layer" style="border-color:rgba(255,152,0,0.2)">
+        <div class="arch-label" style="color:#8F6020">DATA</div>
+        <div class="arch-cards">
+          <div class="arch-card">
+            <div class="ac-icon">🐘</div>
+            <div class="ac-name">PostgreSQL 16</div>
+            <div class="ac-sub">Ana ilişkisel veritabanı. JSONB, UUID, ENUM destekli.</div>
+            <div class="ac-tags">
+              <span class="ac-tag orange">JSONB</span>
+              <span class="ac-tag orange">UUID PK</span>
+              <span class="ac-tag orange">ENUM</span>
+            </div>
+          </div>
+          <div class="arch-card">
+            <div class="ac-icon">⚡</div>
+            <div class="ac-name">Redis Cache</div>
+            <div class="ac-sub">Analitik sonuçları, liderboard, session ve Celery broker.</div>
+            <div class="ac-tags">
+              <span class="ac-tag orange">Cache</span>
+              <span class="ac-tag orange">Broker</span>
+            </div>
+          </div>
+          <div class="arch-card">
+            <div class="ac-icon">📦</div>
+            <div class="ac-name">Medya / Statik</div>
+            <div class="ac-sub">Profil görselleri, rozet ikonları. AWS S3 veya lokal Nginx.</div>
+            <div class="ac-tags">
+              <span class="ac-tag orange">S3 / Nginx</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-connector">
+        <span class="arch-connector-label">FCM / APN Push · HealthKit / Google Fit</span>
+      </div>
+
+      <!-- KATMAN: DIŞ SERVİSLER -->
+      <div class="arch-layer" style="border-color:rgba(171,71,188,0.2)">
+        <div class="arch-label" style="color:#7B3F8C">3RD PARTY</div>
+        <div class="arch-cards">
+          <div class="arch-card">
+            <div class="ac-icon">🔔</div>
+            <div class="ac-name">Push Bildirim</div>
+            <div class="ac-sub">Firebase Cloud Messaging (Android) + Apple Push Notification (iOS).</div>
+            <div class="ac-tags">
+              <span class="ac-tag purple">FCM</span>
+              <span class="ac-tag purple">APN</span>
+            </div>
+          </div>
+          <div class="arch-card">
+            <div class="ac-icon">💚</div>
+            <div class="ac-name">Sağlık Verisi</div>
+            <div class="ac-sub">HealthKit (iOS) ve Google Fit (Android) Bio-Sync entegrasyonu.</div>
+            <div class="ac-tags">
+              <span class="ac-tag purple">HealthKit</span>
+              <span class="ac-tag purple">Google Fit</span>
+            </div>
+          </div>
+          <div class="arch-card">
+            <div class="ac-icon">🌍</div>
+            <div class="ac-name">Emisyon Faktör API</div>
+            <div class="ac-sub">climatiq.io API ile güncel emisyon faktörleri (IPCC/DEFRA tabanlı).</div>
+            <div class="ac-tags">
+              <span class="ac-tag purple">climatiq.io</span>
+              <span class="ac-tag purple">IPCC</span>
+            </div>
+          </div>
+          <div class="arch-card">
+            <div class="ac-icon">🚨</div>
+            <div class="ac-name">Monitoring</div>
+            <div class="ac-sub">Sentry ile hata takibi. GitHub Actions CI/CD pipeline.</div>
+            <div class="ac-tags">
+              <span class="ac-tag purple">Sentry</span>
+              <span class="ac-tag purple">GitHub CI</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 2. KLASÖR YAPISI -->
+  <div class="section" id="klasor">
+    <div class="section-header">
+      <div class="section-num">02</div>
+      <h2>Klasör Yapısı <span>— Backend & Frontend</span></h2>
+    </div>
+    <div class="tree-grid">
+
+      <!-- BACKEND -->
+      <div class="tree-card">
+        <div class="tree-card-title"><div class="dot"></div>backend/ <span style="font-weight:400;color:var(--text3)">— Django Projesi</span></div>
+
+        <div class="tree-item"><span class="ti-prefix">├── </span><span class="ti-name dir">config/</span><span class="ti-desc">settings, urls, wsgi, asgi</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   ├── </span><span class="ti-name file">settings/base.py</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   ├── </span><span class="ti-name file">settings/development.py</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   └── </span><span class="ti-name file">settings/production.py</span></div>
+
+        <div class="tree-item" style="margin-top:6px"><span class="ti-prefix">├── </span><span class="ti-name dir">apps/</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   ├── </span><span class="ti-name dir">users/</span><span class="ti-desc">kimlik doğrulama, JWT, profil</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   ├── </span><span class="ti-name dir">emissions/</span><span class="ti-desc">emisyon CRUD, faktörler, hesaplama</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   ├── </span><span class="ti-name dir">analytics/</span><span class="ti-desc">günlük/haftalık özet, karbon bütçesi</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   ├── </span><span class="ti-name dir">gamification/</span><span class="ti-desc">XP, rozet, seri, liderboard</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   ├── </span><span class="ti-name dir">carbon_dna/</span><span class="ti-desc">DNA profil hesaplama</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   ├── </span><span class="ti-name dir">ai_features/</span><span class="ti-desc">hafıza, ikiz, senaryo AI modülleri</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   ├── </span><span class="ti-name dir">marketplace/</span><span class="ti-desc">sanal karbon piyasası</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   ├── </span><span class="ti-name dir">contracts/</span><span class="ti-desc">akıllı sözleşmeler</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   ├── </span><span class="ti-name dir">biosync/</span><span class="ti-desc">sağlık verisi entegrasyonu</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   ├── </span><span class="ti-name dir">notifications/</span><span class="ti-desc">push bildirim, Celery görevleri</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   └── </span><span class="ti-name dir">symphony/</span><span class="ti-desc">emisyon → müzik algoritması</span></div>
+
+        <div class="tree-item" style="margin-top:6px"><span class="ti-prefix">├── </span><span class="ti-name dir">tests/</span><span class="ti-desc">unit, integration, API testleri</span></div>
+        <div class="tree-item"><span class="ti-prefix">├── </span><span class="ti-name dir">utils/</span><span class="ti-desc">yardımcılar, sabitler</span></div>
+        <div class="tree-item"><span class="ti-prefix">├── </span><span class="ti-name dir">requirements/</span><span class="ti-desc">base / dev / prod .txt</span></div>
+        <div class="tree-item"><span class="ti-prefix">├── </span><span class="ti-name config">manage.py</span></div>
+        <div class="tree-item"><span class="ti-prefix">└── </span><span class="ti-name config">Dockerfile</span></div>
+      </div>
+
+      <!-- FRONTEND -->
+      <div class="tree-card">
+        <div class="tree-card-title"><div class="dot" style="background:#42A5F5;box-shadow:0 0 6px #42A5F5"></div>frontend/ <span style="font-weight:400;color:var(--text3)">— React Native / Expo</span></div>
+
+        <div class="tree-item"><span class="ti-prefix">├── </span><span class="ti-name dir">src/</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   ├── </span><span class="ti-name dir">navigation/</span><span class="ti-desc">RootNavigator, BottomTabNavigator</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   ├── </span><span class="ti-name dir">screens/</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   │   ├── </span><span class="ti-name file">Home/</span><span class="ti-desc">Ana Sayfa</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   │   ├── </span><span class="ti-name file">EmissionEntry/</span><span class="ti-desc">Emisyon Girişi</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   │   ├── </span><span class="ti-name file">CarbonDNA/</span><span class="ti-desc">DNA Profili</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   │   ├── </span><span class="ti-name file">CarbonTwin/</span><span class="ti-desc">Karbon İkizi</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   │   ├── </span><span class="ti-name file">TimeMachine/</span><span class="ti-desc">Zaman Makinesi</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   │   ├── </span><span class="ti-name file">Analytics/</span><span class="ti-desc">Analitik</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   │   ├── </span><span class="ti-name file">Profile/</span><span class="ti-desc">Profil</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   │   ├── </span><span class="ti-name file">Discover/</span><span class="ti-desc">Keşfet Hub</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   │   ├── </span><span class="ti-name file">Marketplace/</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   │   ├── </span><span class="ti-name file">Contracts/</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   │   ├── </span><span class="ti-name file">Symphony/</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   │   └── </span><span class="ti-name file">Memory/</span><span class="ti-desc">Bio-Sync</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   ├── </span><span class="ti-name dir">components/</span><span class="ti-desc">common, charts, gamification, emission</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   ├── </span><span class="ti-name dir">store/</span><span class="ti-desc">Redux Toolkit + RTK Query slices</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   ├── </span><span class="ti-name dir">hooks/</span><span class="ti-desc">useEmissions, useCarbonDNA, useXP…</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   ├── </span><span class="ti-name dir">services/</span><span class="ti-desc">healthKit, notifications</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   ├── </span><span class="ti-name dir">theme/</span><span class="ti-desc">renkler, tipografi, spacing</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   ├── </span><span class="ti-name dir">i18n/</span><span class="ti-desc">tr.json, en.json</span></div>
+        <div class="tree-item"><span class="ti-prefix">│   └── </span><span class="ti-name dir">types/</span><span class="ti-desc">TypeScript interface tanımları</span></div>
+        <div class="tree-item" style="margin-top:6px"><span class="ti-prefix">├── </span><span class="ti-name dir">assets/</span><span class="ti-desc">ikonlar, Lottie animasyonlar, sesler</span></div>
+        <div class="tree-item"><span class="ti-prefix">├── </span><span class="ti-name config">app.json</span><span class="ti-desc">Expo konfigürasyonu</span></div>
+        <div class="tree-item"><span class="ti-prefix">├── </span><span class="ti-name config">tsconfig.json</span></div>
+        <div class="tree-item"><span class="ti-prefix">└── </span><span class="ti-name config">package.json</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 3. VERİ AKIŞI -->
+  <div class="section" id="akis">
+    <div class="section-header">
+      <div class="section-num">03</div>
+      <h2>Veri Akışı <span>— Emisyon Girişinden Gamification'a</span></h2>
+    </div>
+
+    <div class="flow-container">
+      <div class="flow-step">
+        <div class="flow-icon">📱</div>
+        <div class="flow-name">Kullanıcı Girişi</div>
+        <div class="flow-detail">Emisyon kategorisi seçer, miktar girer. 3 adımlı flow.</div>
+        <span class="flow-badge">UI Event</span>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-icon">🔄</div>
+        <div class="flow-name">RTK Query</div>
+        <div class="flow-detail">POST /api/emissions/entries/ çağrısı. JWT ile kimlik doğrulama.</div>
+        <span class="flow-badge">HTTP POST</span>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-icon">⚙️</div>
+        <div class="flow-name">DRF ViewSet</div>
+        <div class="flow-detail">Serializer doğrulama. EmissionFactor tablosundan çarpan çek.</div>
+        <span class="flow-badge">Validation</span>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-icon">🧮</div>
+        <div class="flow-name">Calculator</div>
+        <div class="flow-detail">kg CO2e = miktar × emisyon_faktörü. EmissionEntry kaydet.</div>
+        <span class="flow-badge">PostgreSQL</span>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-icon">📊</div>
+        <div class="flow-name">Django Signal</div>
+        <div class="flow-detail">DailyEmissionSummary güncelle. Karbon bütçesi kontrolü.</div>
+        <span class="flow-badge">Signal</span>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-icon">🎮</div>
+        <div class="flow-name">XP Engine</div>
+        <div class="flow-detail">XP hesapla, streak kontrol et, rozet tetikleyici çalıştır.</div>
+        <span class="flow-badge">Celery</span>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-icon">🤖</div>
+        <div class="flow-name">AI Güncelle</div>
+        <div class="flow-detail">DNA profili yeniden hesapla. Karbon hafıza modelini besle.</div>
+        <span class="flow-badge">ML Model</span>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-icon">✅</div>
+        <div class="flow-name">Response</div>
+        <div class="flow-detail">Güncellenmiş XP, rozet, günlük özet mobil uygulamaya döner.</div>
+        <span class="flow-badge">201 Created</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. VERİTABANI -->
+  <div class="section" id="veritabani">
+    <div class="section-header">
+      <div class="section-num">04</div>
+      <h2>Veritabanı Şeması <span>— Ana Tablolar & İlişkiler</span></h2>
+    </div>
+    <div class="db-grid">
+
+      <div class="db-card">
+        <div class="db-card-header">👤 users_customuser</div>
+        <div class="db-row"><span class="db-pk">PK</span><span class="db-field">id</span><span class="db-type">UUID</span></div>
+        <div class="db-row"><span class="db-field" style="margin-left:28px">email</span><span class="db-type">VARCHAR UNIQUE</span></div>
+        <div class="db-row"><span class="db-field" style="margin-left:28px">username</span><span class="db-type">VARCHAR</span></div>
+        <div class="db-row"><span class="db-fk">FK</span><span class="db-field">university</span><span class="db-type">→ University</span></div>
+        <div class="db-row"><span class="db-field" style="margin-left:28px">role</span><span class="db-type">ENUM(student/staff)</span></div>
+      </div>
+
+      <div class="db-card">
+        <div class="db-card-header">📋 users_profile</div>
+        <div class="db-row"><span class="db-fk">1:1</span><span class="db-field">user</span><span class="db-type">→ CustomUser</span></div>
+        <div class="db-row"><span class="db-field" style="margin-left:28px">total_xp</span><span class="db-type">INT DEFAULT 0</span></div>
+        <div class="db-row"><span class="db-field" style="margin-left:28px">current_streak</span><span class="db-type">INT DEFAULT 0</span></div>
+        <div class="db-row"><span class="db-field" style="margin-left:28px">level</span><span class="db-type">INT DEFAULT 1</span></div>
+        <div class="db-row"><span class="db-field" style="margin-left:28px">carbon_budget_daily</span><span class="db-type">DECIMAL</span></div>
+      </div>
+
+      <div class="db-card">
+        <div class="db-card-header">📝 emissions_entry</div>
+        <div class="db-row"><span class="db-pk">PK</span><span class="db-field">id</span><span class="db-type">UUID</span></div>
+        <div class="db-row"><span class="db-fk">FK</span><span class="db-field">user</span><span class="db-type">→ CustomUser</span></div>
+        <div class="db-row"><span class="db-fk">FK</span><span class="db-field">category</span><span class="db-type">→ Category</span></div>
+        <div class="db-row"><span class="db-fk">FK</span><span class="db-field">factor</span><span class="db-type">→ EmissionFactor</span></div>
+        <div class="db-row"><span class="db-field" style="margin-left:28px">quantity</span><span class="db-type">DECIMAL</span></div>
+        <div class="db-row"><span class="db-field" style="margin-left:28px">co2_kg</span><span class="db-type">DECIMAL</span></div>
+        <div class="db-row"><span class="db-field" style="margin-left:28px">is_ai_estimated</span><span class="db-type">BOOLEAN</span></div>
+        <div class="db-row"><span class="db-field" style="margin-left:28px">logged_at</span><span class="db-type">TIMESTAMP</span></div>
+      </div>
+
+      <div class="db-card">
+        <div class="db-card-header">📊 analytics_dailysummary</div>
+        <div class="db-row"><span class="db-pk">PK</span><span class="db-field">id</span><span class="db-type">UUID</span></div>
+        <div class="db-row"><span class="db-fk">FK</span><span class="db-field">user</span><span class="db-type">→ CustomUser</span></div>
+        <div class="db-row"><span class="db-field" style="margin-left:28px">date</span><span class="db-type">DATE</span></div>
+        <div class="db-row"><span class="db-field" style="margin-left:28px">total_co2_kg</span><span class="db-type">DECIMAL</span></div>
+        <div class="db-row"><span class="db-field" style="margin-left:28px">by_category</span><span class="db-type">JSONB</span></div>
+      </div>
+
+      <div class="db-card">
+        <div class="db-card-header">🏅 gamification_userbadge</div>
+        <div class="db-row"><span class="db-fk">FK</span><span class="db-field">user</span><span class="db-type">→ CustomUser</span></div>
+        <div class="db-row"><span class="db-fk">FK</span><span class="db-field">badge</span><span class="db-type">→ Badge</span></div>
+        <div class="db-row"><span class="db-field" style="margin-left:28px">earned_at</span><span class="db-type">TIMESTAMP</span></div>
+        <div class="db-card-header" style="margin-top:8px;border-top:1px solid var(--border)">🧬 carbon_dna_profile</div>
+        <div class="db-row"><span class="db-fk">1:1</span><span class="db-field">user</span><span class="db-type">→ CustomUser</span></div>
+        <div class="db-row"><span class="db-field" style="margin-left:28px">sequence</span><span class="db-type">VARCHAR (ATGC…)</span></div>
+        <div class="db-row"><span class="db-field" style="margin-left:28px">segments</span><span class="db-type">JSONB</span></div>
+        <div class="db-row"><span class="db-field" style="margin-left:28px">rarity</span><span class="db-type">ENUM</span></div>
+      </div>
+
+      <div class="db-card">
+        <div class="db-card-header">🤝 contracts_carboncontract</div>
+        <div class="db-row"><span class="db-pk">PK</span><span class="db-field">id</span><span class="db-type">UUID</span></div>
+        <div class="db-row"><span class="db-fk">FK</span><span class="db-field">creator</span><span class="db-type">→ CustomUser</span></div>
+        <div class="db-row"><span class="db-field" style="margin-left:28px">target_reduction_kg</span><span class="db-type">DECIMAL</span></div>
+        <div class="db-row"><span class="db-field" style="margin-left:28px">stake_xp</span><span class="db-type">INT</span></div>
+        <div class="db-row"><span class="db-field" style="margin-left:28px">status</span><span class="db-type">ENUM(active/done/fail)</span></div>
+        <div class="db-card-header" style="margin-top:8px;border-top:1px solid var(--border)">💚 biosync_healthdata</div>
+        <div class="db-row"><span class="db-fk">FK</span><span class="db-field">user</span><span class="db-type">→ CustomUser</span></div>
+        <div class="db-row"><span class="db-field" style="margin-left:28px">steps</span><span class="db-type">INT</span></div>
+        <div class="db-row"><span class="db-field" style="margin-left:28px">carbon_saved_kg</span><span class="db-type">DECIMAL</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 5. API ENDPOINTLERİ -->
+  <div class="section" id="api">
+    <div class="section-header">
+      <div class="section-num">05</div>
+      <h2>API Endpointleri <span>— /api/v1/</span></h2>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(76,175,80,0.7)"></div>GET</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(255,152,0,0.7)"></div>POST</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(66,165,245,0.7)"></div>PUT/PATCH</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(239,83,80,0.7)"></div>DELETE</div>
+    </div>
+    <div class="api-grid">
+
+      <div class="api-group">
+        <div class="api-group-header">🔐 Kimlik Doğrulama</div>
+        <div class="api-row"><span class="method post">POST</span><span class="api-path">/auth/register/</span></div>
+        <div class="api-row"><span class="method post">POST</span><span class="api-path">/auth/login/</span></div>
+        <div class="api-row"><span class="method post">POST</span><span class="api-path">/auth/token/refresh/</span></div>
+        <div class="api-row"><span class="method get">GET</span><span class="api-path">/auth/me/</span></div>
+        <div class="api-row"><span class="method put">PUT</span><span class="api-path">/auth/me/</span></div>
+        <div class="api-row"><span class="method post">POST</span><span class="api-path">/auth/password/reset/</span></div>
+      </div>
+
+      <div class="api-group">
+        <div class="api-group-header">🌿 Emisyon</div>
+        <div class="api-row"><span class="method get">GET</span><span class="api-path">/emissions/categories/</span></div>
+        <div class="api-row"><span class="method get">GET</span><span class="api-path">/emissions/factors/</span></div>
+        <div class="api-row"><span class="method post">POST</span><span class="api-path">/emissions/entries/</span></div>
+        <div class="api-row"><span class="method get">GET</span><span class="api-path">/emissions/entries/</span></div>
+        <div class="api-row"><span class="method del">DEL</span><span class="api-path">/emissions/entries/{id}/</span></div>
+        <div class="api-row"><span class="method get">GET</span><span class="api-path">/emissions/today/</span></div>
+        <div class="api-row"><span class="method post">POST</span><span class="api-path">/emissions/calculate/</span></div>
+      </div>
+
+      <div class="api-group">
+        <div class="api-group-header">📈 Analitik</div>
+        <div class="api-row"><span class="method get">GET</span><span class="api-path">/analytics/daily/</span></div>
+        <div class="api-row"><span class="method get">GET</span><span class="api-path">/analytics/weekly/</span></div>
+        <div class="api-row"><span class="method get">GET</span><span class="api-path">/analytics/hourly/</span></div>
+        <div class="api-row"><span class="method get">GET</span><span class="api-path">/analytics/budget/</span></div>
+        <div class="api-row"><span class="method get">GET</span><span class="api-path">/analytics/trend/</span></div>
+        <div class="api-row"><span class="method get">GET</span><span class="api-path">/analytics/category-breakdown/</span></div>
+      </div>
+
+      <div class="api-group">
+        <div class="api-group-header">🎮 Gamification</div>
+        <div class="api-row"><span class="method get">GET</span><span class="api-path">/gamification/profile/</span></div>
+        <div class="api-row"><span class="method get">GET</span><span class="api-path">/gamification/badges/</span></div>
+        <div class="api-row"><span class="method get">GET</span><span class="api-path">/gamification/leaderboard/</span></div>
+        <div class="api-row"><span class="method get">GET</span><span class="api-path">/gamification/achievements/</span></div>
+        <div class="api-row"><span class="method get">GET</span><span class="api-path">/gamification/challenges/</span></div>
+      </div>
+
+      <div class="api-group">
+        <div class="api-group-header">🤖 AI Özellikleri</div>
+        <div class="api-row"><span class="method get">GET</span><span class="api-path">/ai/carbon-dna/</span></div>
+        <div class="api-row"><span class="method post">POST</span><span class="api-path">/ai/carbon-dna/recalculate/</span></div>
+        <div class="api-row"><span class="method get">GET</span><span class="api-path">/ai/twin/</span></div>
+        <div class="api-row"><span class="method get">GET</span><span class="api-path">/ai/time-machine/</span></div>
+        <div class="api-row"><span class="method get">GET</span><span class="api-path">/ai/memory/missing-day/</span></div>
+        <div class="api-row"><span class="method post">POST</span><span class="api-path">/ai/memory/confirm/</span></div>
+        <div class="api-row"><span class="method get">GET</span><span class="api-path">/ai/symphony/weekly/</span></div>
+      </div>
+
+      <div class="api-group">
+        <div class="api-group-header">🏪 Piyasa · Sözleşme · Bio-Sync</div>
+        <div class="api-row"><span class="method get">GET</span><span class="api-path">/marketplace/</span></div>
+        <div class="api-row"><span class="method post">POST</span><span class="api-path">/marketplace/trade/</span></div>
+        <div class="api-row"><span class="method get">GET</span><span class="api-path">/contracts/</span></div>
+        <div class="api-row"><span class="method post">POST</span><span class="api-path">/contracts/</span></div>
+        <div class="api-row"><span class="method post">POST</span><span class="api-path">/contracts/{id}/join/</span></div>
+        <div class="api-row"><span class="method post">POST</span><span class="api-path">/biosync/health/</span></div>
+        <div class="api-row"><span class="method get">GET</span><span class="api-path">/biosync/score/</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 6. SPRINT PLANI -->
+  <div class="section" id="sprint">
+    <div class="section-header">
+      <div class="section-num">06</div>
+      <h2>Sprint Planı <span>— 8 Sprint · Paralel Backend & Frontend Geliştirme</span></h2>
+    </div>
+    <div class="sprint-list">
+
+      <div style="display:grid;grid-template-columns:52px 1fr 1fr 140px;gap:12px;padding:0 16px 6px;font-size:10px;font-weight:700;color:var(--text3);letter-spacing:1px;text-transform:uppercase">
+        <div>Sprint</div><div>Backend</div><div>Frontend</div><div>Çıktı</div>
+      </div>
+
+      <div class="sprint-row">
+        <div class="sprint-num">1</div>
+        <div><div class="sprint-col-title">Backend</div><div class="sprint-col-val">Proje kurulum, Docker, Django yapısı, CustomUser modeli, JWT auth</div></div>
+        <div><div class="sprint-col-title">Frontend</div><div class="sprint-col-val">Expo + TS kurulum, tema, React Navigation, Auth ekranları</div></div>
+        <div class="sprint-output">✅ Auth akışı end-to-end</div>
+      </div>
+
+      <div class="sprint-row">
+        <div class="sprint-num">2</div>
+        <div><div class="sprint-col-title">Backend</div><div class="sprint-col-val">Emisyon modülü (model, CRUD, hesaplama), emisyon faktörü seed</div></div>
+        <div><div class="sprint-col-title">Frontend</div><div class="sprint-col-val">Emisyon girişi ekranı (3 adım), ortak UI bileşenleri</div></div>
+        <div class="sprint-output">✅ Emisyon kaydetme</div>
+      </div>
+
+      <div class="sprint-row">
+        <div class="sprint-num">3</div>
+        <div><div class="sprint-col-title">Backend</div><div class="sprint-col-val">Analitik servisi, günlük/haftalık özet, karbon bütçesi</div></div>
+        <div><div class="sprint-col-title">Frontend</div><div class="sprint-col-val">Ana Sayfa, Analitik ekranı, bar & saatlik grafikler</div></div>
+        <div class="sprint-output">✅ Veri görselleştirme</div>
+      </div>
+
+      <div class="sprint-row">
+        <div class="sprint-num">4</div>
+        <div><div class="sprint-col-title">Backend</div><div class="sprint-col-val">Gamification motoru: XP, rozet tetikleme, streak, liderboard</div></div>
+        <div><div class="sprint-col-title">Frontend</div><div class="sprint-col-val">Profil ekranı, rozet gridi, liderboard satırları</div></div>
+        <div class="sprint-output">✅ Oyunlaştırma sistemi</div>
+      </div>
+
+      <div class="sprint-row">
+        <div class="sprint-num">5</div>
+        <div><div class="sprint-col-title">Backend</div><div class="sprint-col-val">Karbon DNA, Karbon İkizi, Zaman Makinesi AI modülleri</div></div>
+        <div><div class="sprint-col-title">Frontend</div><div class="sprint-col-val">SVG DNA gorseli, İkiz karşılaştırma, Zaman Makinesi grafiği</div></div>
+        <div class="sprint-output">✅ AI özellikler canlıda</div>
+      </div>
+
+      <div class="sprint-row">
+        <div class="sprint-num">6</div>
+        <div><div class="sprint-col-title">Backend</div><div class="sprint-col-val">Karbon Hafıza, Duygu, Senfoni, Piyasa, Sözleşme modülleri</div></div>
+        <div><div class="sprint-col-title">Frontend</div><div class="sprint-col-val">Keşfet hub, Piyasa, Sözleşme, Senfoni, Hafıza ekranları</div></div>
+        <div class="sprint-output">✅ Tüm ekranlar tamam</div>
+      </div>
+
+      <div class="sprint-row">
+        <div class="sprint-num">7</div>
+        <div><div class="sprint-col-title">Backend</div><div class="sprint-col-val">Bio-Sync entegrasyonu, WebSocket (Django Channels), FCM/APN</div></div>
+        <div><div class="sprint-col-title">Frontend</div><div class="sprint-col-val">HealthKit/Google Fit, Bio-Sync ekranı, push bildirim izinleri</div></div>
+        <div class="sprint-output">✅ Sağlık entegrasyonu</div>
+      </div>
+
+      <div class="sprint-row">
+        <div class="sprint-num">8</div>
+        <div><div class="sprint-col-title">Backend</div><div class="sprint-col-val">Redis cache, rate limit, güvenlik taraması, Nginx, Sentry, staging deploy</div></div>
+        <div><div class="sprint-col-title">Frontend</div><div class="sprint-col-val">Animasyon politura, dark mode, Detox E2E testleri, App Store hazırlığı</div></div>
+        <div class="sprint-output" style="background:rgba(255,215,0,0.1);border-color:rgba(255,215,0,0.3);color:#FFD700">🚀 MVP Release</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 7. TEST MATRİSİ -->
+  <div class="section" id="test">
+    <div class="section-header">
+      <div class="section-num">07</div>
+      <h2>Test Matrisi <span>— Backend & Frontend</span></h2>
+    </div>
+    <div class="test-grid">
+
+      <div class="test-card">
+        <div class="test-card-title">🐍 Backend Testleri</div>
+        <div class="test-row">
+          <div class="test-icon">🔬</div>
+          <div class="test-info"><div class="test-name">Birim Testleri</div><div class="test-tool">pytest + pytest-django</div></div>
+          <span class="test-target t-green">%80+ kapsam</span>
+        </div>
+        <div class="test-row">
+          <div class="test-icon">🔌</div>
+          <div class="test-info"><div class="test-name">API Testleri</div><div class="test-tool">DRF APITestCase</div></div>
+          <span class="test-target t-green">Tüm endpoint'ler</span>
+        </div>
+        <div class="test-row">
+          <div class="test-icon">🔗</div>
+          <div class="test-info"><div class="test-name">Entegrasyon</div><div class="test-tool">pytest + Celery eager</div></div>
+          <span class="test-target t-orange">Kritik akışlar</span>
+        </div>
+        <div class="test-row">
+          <div class="test-icon">🔒</div>
+          <div class="test-info"><div class="test-name">Güvenlik Taraması</div><div class="test-tool">Bandit + Safety</div></div>
+          <span class="test-target t-green">0 kritik bulgu</span>
+        </div>
+        <div class="test-row">
+          <div class="test-icon">⚡</div>
+          <div class="test-info"><div class="test-name">Yük Testi</div><div class="test-tool">Locust / k6</div></div>
+          <span class="test-target t-orange">p99 &lt; 500ms</span>
+        </div>
+      </div>
+
+      <div class="test-card">
+        <div class="test-card-title">📱 Frontend Testleri</div>
+        <div class="test-row">
+          <div class="test-icon">🔬</div>
+          <div class="test-info"><div class="test-name">Birim + Snapshot</div><div class="test-tool">Jest + RNTL</div></div>
+          <span class="test-target t-green">%70+ kapsam</span>
+        </div>
+        <div class="test-row">
+          <div class="test-icon">🪝</div>
+          <div class="test-info"><div class="test-name">Hook Testleri</div><div class="test-tool">renderHook (RNTL)</div></div>
+          <span class="test-target t-green">Tüm hooks</span>
+        </div>
+        <div class="test-row">
+          <div class="test-icon">🔗</div>
+          <div class="test-info"><div class="test-name">Entegrasyon</div><div class="test-tool">RNTL + MSW</div></div>
+          <span class="test-target t-orange">Ana akışlar</span>
+        </div>
+        <div class="test-row">
+          <div class="test-icon">📸</div>
+          <div class="test-info"><div class="test-name">E2E Test</div><div class="test-tool">Detox</div></div>
+          <span class="test-target t-blue">Kayıt → Emisyon → Rozet</span>
+        </div>
+        <div class="test-row">
+          <div class="test-icon">♿</div>
+          <div class="test-info"><div class="test-name">Erişilebilirlik</div><div class="test-tool">axe-native</div></div>
+          <span class="test-target t-orange">WCAG AA</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Kontrol listesi -->
+    <div style="margin-top:16px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;">
+      <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px">✅ Her Sprint Sonu Kontrol Listesi</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px">
+        <div style="display:flex;gap:8px;align-items:center;font-size:11px;color:var(--text2)"><span style="color:var(--g400)">◆</span> Flake8 / ESLint — sıfır hata</div>
+        <div style="display:flex;gap:8px;align-items:center;font-size:11px;color:var(--text2)"><span style="color:var(--g400)">◆</span> pytest / Jest — tüm testler yeşil</div>
+        <div style="display:flex;gap:8px;align-items:center;font-size:11px;color:var(--text2)"><span style="color:var(--g400)">◆</span> Swagger güncel ve çalışır</div>
+        <div style="display:flex;gap:8px;align-items:center;font-size:11px;color:var(--text2)"><span style="color:var(--g400)">◆</span> DB migrate — veri kaybı yok</div>
+        <div style="display:flex;gap:8px;align-items:center;font-size:11px;color:var(--text2)"><span style="color:var(--g400)">◆</span> PR review — en az 1 onay</div>
+        <div style="display:flex;gap:8px;align-items:center;font-size:11px;color:var(--text2)"><span style="color:var(--g400)">◆</span> Bandit / npm audit — 0 kritik</div>
+        <div style="display:flex;gap:8px;align-items:center;font-size:11px;color:var(--text2)"><span style="color:var(--g400)">◆</span> Analitik endpoint &lt; 300ms</div>
+        <div style="display:flex;gap:8px;align-items:center;font-size:11px;color:var(--text2)"><span style="color:var(--g400)">◆</span> docker-compose up — hatasız</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
