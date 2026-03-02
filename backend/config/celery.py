@@ -4,7 +4,7 @@ from celery.schedules import crontab
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 
-app = Celery('greencampus')
+app = Celery('karbonayakizi')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
@@ -34,5 +34,25 @@ app.conf.beat_schedule = {
     'update-leaderboard': {
         'task': 'apps.gamification.tasks.update_weekly_leaderboard',
         'schedule': crontab(hour=20, minute=0, day_of_week=0),
+    },
+    # Her gece 00:05 — Günlük hedef tutturanlara GCC kredi dağıt
+    'distribute-daily-credits': {
+        'task': 'apps.market.tasks.distribute_daily_credits',
+        'schedule': crontab(hour=0, minute=5),
+    },
+    # Her gün 06:00 — Başlama tarihi gelen sözleşmeleri aktifleştir
+    'activate-contracts': {
+        'task': 'apps.market.tasks.activate_contracts',
+        'schedule': crontab(hour=6, minute=0),
+    },
+    # Her gün 06:30 — Süresi dolan sözleşmeleri değerlendir
+    'evaluate-contracts': {
+        'task': 'apps.market.tasks.evaluate_contracts',
+        'schedule': crontab(hour=6, minute=30),
+    },
+    # Her gece 21:00 — Seri kırılma uyarısı gönder
+    'send-streak-warnings': {
+        'task': 'apps.users.tasks.send_streak_warnings',
+        'schedule': crontab(hour=21, minute=0),
     },
 }

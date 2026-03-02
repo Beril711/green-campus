@@ -17,7 +17,7 @@ from .serializers import (
 # ── KARBON CÜZDEİni ──────────────────────────────────────────────────────────
 
 class WalletView(APIView):
-    """Kullanıcının GCC (Green Campus Credit) cüzdan bakiyesi."""
+    """Kullanıcının GCC (Green Carbon Credit) cüzdan bakiyesi."""
     permission_classes = [IsAuthenticated]
 
     @extend_schema(summary='Karbon Cüzdanı', tags=['Market'])

@@ -5,7 +5,7 @@ import uuid
 
 
 class CarbonCredit(models.Model):
-    """Sanal GCC (Green Campus Credit) karbon kredisi."""
+    """Sanal GCC (Green Carbon Credit) karbon kredisi."""
 
     user        = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='carbon_wallet')
     balance     = models.DecimalField(max_digits=12, decimal_places=4, default=0)

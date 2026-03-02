@@ -1,5 +1,6 @@
 from celery import shared_task
 from django.contrib.auth import get_user_model
+from django.db import models
 from django.utils import timezone
 from datetime import date, timedelta
 
@@ -72,10 +73,34 @@ def check_badges(user_id: int):
                 earned = EmissionEntry.objects.filter(user=user).exists()
 
             elif badge.trigger == 'co2_saved':
-                # Hedef tutturulan gün sayısını kontrol et
                 from apps.analytics.models import DailyEmissionSummary
                 saved_days = DailyEmissionSummary.objects.filter(user=user, goal_achieved=True).count()
                 earned = saved_days >= badge.threshold
+
+            elif badge.trigger == 'goal_achieved':
+                from apps.analytics.models import DailyEmissionSummary
+                goal_days = DailyEmissionSummary.objects.filter(user=user, goal_achieved=True).count()
+                earned = goal_days >= badge.threshold
+
+            elif badge.trigger == 'category_mastery':
+                cat_counts = EmissionEntry.objects.filter(user=user).values(
+                    'factor__category__slug'
+                ).annotate(cnt=models.Count('id'))
+                earned = any(c['cnt'] >= badge.threshold for c in cat_counts)
+
+            elif badge.trigger == 'leaderboard_top':
+                from apps.gamification.models import WeeklyLeaderboard
+                top_count = WeeklyLeaderboard.objects.filter(
+                    user=user, rank__lte=badge.threshold
+                ).count()
+                earned = top_count >= 1
+
+            elif badge.trigger == 'weekly_champion':
+                from apps.gamification.models import WeeklyLeaderboard
+                champion_count = WeeklyLeaderboard.objects.filter(
+                    user=user, rank=1
+                ).count()
+                earned = champion_count >= badge.threshold
 
             if earned:
                 user_badge = UserBadge.objects.create(user=user, badge=badge)

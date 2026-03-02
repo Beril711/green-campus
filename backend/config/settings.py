@@ -1,5 +1,5 @@
 """
-Django Settings — GreenCampus
+Django Settings — Karbon Ayak İzi
 Tüm ortam değişkenleri .env dosyasından okunur.
 """
 
@@ -111,15 +111,17 @@ REST_FRAMEWORK = {
 
 # ── SPECTACULAR (Swagger) ────────────────────────────────────────────────────
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'GreenCampus API',
+    'TITLE': 'Karbon Ayak İzi API',
     'DESCRIPTION': 'Karbon Ayak İzi Takip & Gamification Platformu',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
 }
 
 # ── CORS ──────────────────────────────────────────────────────────────────────
+CORS_ALLOW_ALL_ORIGINS = DEBUG  # Development'ta tüm origin'lere izin ver
 CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[
     'http://localhost:3000',
+    'http://localhost:8082',
     'http://localhost:19006',
     'exp://localhost:8081',
 ])
@@ -182,7 +184,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ── EMAIL ────────────────────────────────────────────────────────────────────
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='noreply@greencampus.app')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='noreply@karbonayakizi.app')
 
 # ── ÜNİVERSİTE DOMAIN'LERİ ───────────────────────────────────────────────────
 ALLOWED_UNIVERSITY_DOMAINS = ['ahievran.edu.tr', 'edu.tr']

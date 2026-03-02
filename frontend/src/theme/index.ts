@@ -1,5 +1,5 @@
 // src/theme/index.ts
-// GreenCampus Tema Sistemi
+// Karbon Ayak İzi Tema Sistemi
 
 export const colors = {
   // Yeşil paleti

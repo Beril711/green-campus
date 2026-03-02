@@ -43,7 +43,7 @@ export default function LoginScreen({ navigation }: any) {
         {/* Logo & Başlık */}
         <View style={styles.header}>
           <Text style={styles.logo}>🌱</Text>
-          <Text style={styles.title}>GreenCampus</Text>
+          <Text style={styles.title}>Karbon Ayak İzi</Text>
           <Text style={styles.subtitle}>Karbon ayak izini takip et, dünyayı dönüştür</Text>
         </View>
 

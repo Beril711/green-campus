@@ -119,6 +119,36 @@ def send_streak_warning(user_id: int, current_streak: int):
 
 
 @shared_task
+def send_streak_warnings():
+    """
+    Her gece 21:00 — Bugün giriş yapmamış ve aktif serisi olan
+    kullanıcılara seri uyarısı gönder.
+    """
+    from apps.gamification.models import Streak
+    from apps.emissions.models import EmissionEntry
+    from django.utils import timezone
+
+    today = timezone.localdate()
+
+    entered_today = set(
+        EmissionEntry.objects.filter(date=today)
+        .values_list('user_id', flat=True)
+    )
+
+    active_streaks = Streak.objects.filter(
+        current_streak__gte=3,
+    ).exclude(user_id__in=entered_today).select_related('user')
+
+    count = 0
+    for streak in active_streaks:
+        send_streak_warning.delay(streak.user_id, streak.current_streak)
+        count += 1
+
+    logger.info(f'Seri uyarısı: {count} kullanıcıya gönderildi.')
+    return {'sent': count}
+
+
+@shared_task
 def send_weekly_summary_email(user_id: int):
     """
     Haftanın özet e-postasını gönder (opsiyonel).
@@ -147,7 +177,7 @@ def send_weekly_summary_email(user_id: int):
             direction = 'azaldı ✅' if summary.change_pct < 0 else 'arttı ⚠️'
             message += f'Geçen haftaya göre %{abs(summary.change_pct):.1f} {direction}\n'
 
-        message += '\nGreenCampus uygulamasından daha fazla detay görebilirsin.'
+        message += '\nKarbon Ayak İzi uygulamasından daha fazla detay görebilirsin.'
 
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=True)
         logger.info(f'Haftalık özet e-postası gönderildi: {user.email}')

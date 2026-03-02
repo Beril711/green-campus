@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+
+# Django
+db.sqlite3
+*.log
+media/
+staticfiles/
+
+# Virtual Environment
+backend/venv/
+
+# Environment
+.env
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node
+node_modules/
+.expo/
+dist/
+*.tsbuildinfo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude
+.claude/
