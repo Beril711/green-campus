@@ -1,28 +1,28 @@
-// src/screens/main/ProfileScreen.tsx
 import React, { useEffect, useState } from 'react';
 import {
   View, Text, ScrollView, StyleSheet,
-  TouchableOpacity, ActivityIndicator, Image,
+  TouchableOpacity, ActivityIndicator, Image, Alert,
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { colors, spacing, radius, typography, shadows } from '../../theme';
 import api from '../../services/api';
+import type { Badge, GamificationStatus, LeaderboardData } from '../../types';
 
 const TIER_COLORS: Record<string, string> = {
-  bronze:   '#CD7F32',
-  silver:   '#C0C0C0',
-  gold:     '#FFD700',
+  bronze: '#CD7F32',
+  silver: '#C0C0C0',
+  gold: '#FFD700',
   platinum: '#B9F2FF',
 };
 
-export default function ProfileScreen({ navigation }: any) {
-  const { user }        = useSelector((s: RootState) => s.auth);
-  const [badges,        setBadges]        = useState<any[]>([]);
-  const [xpData,        setXpData]        = useState<any>(null);
-  const [leaderboard,   setLeaderboard]   = useState<any>(null);
-  const [loading,       setLoading]       = useState(true);
-  const [activeTab,     setActiveTab]     = useState<'badges' | 'stats'>('badges');
+export default function ProfileScreen({ navigation }: { navigation: { navigate: (screen: string, params?: Record<string, unknown>) => void } }) {
+  const { user } = useSelector((s: RootState) => s.auth);
+  const [badges, setBadges] = useState<Badge[]>([]);
+  const [xpData, setXpData] = useState<GamificationStatus | null>(null);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'badges' | 'stats'>('badges');
 
   useEffect(() => {
     fetchAll();
@@ -39,6 +39,8 @@ export default function ProfileScreen({ navigation }: any) {
       setBadges(bRes.data);
       setXpData(gRes.data);
       setLeaderboard(lRes.data);
+    } catch (err) {
+      Alert.alert('Hata', 'Profil verileri yüklenirken bir sorun oluştu.');
     } finally {
       setLoading(false);
     }
@@ -48,14 +50,14 @@ export default function ProfileScreen({ navigation }: any) {
     return <View style={styles.centered}><ActivityIndicator size="large" color={colors.g600} /></View>;
   }
 
-  const earnedBadges  = badges.filter(b => b.earned);
-  const lockedBadges  = badges.filter(b => !b.earned);
-  const xpToNext      = xpData?.xp?.xp_to_next ?? 0;
-  const totalXP       = xpData?.xp?.total ?? 0;
-  const level         = xpData?.xp?.level ?? 1;
-  const thresholds    = xpData?.xp?.level_thresholds ?? [0, 100];
-  const levelStart    = thresholds[level - 1] ?? 0;
-  const levelEnd      = thresholds[level] ?? 100;
+  const earnedBadges = badges.filter(b => b.earned);
+  const lockedBadges = badges.filter(b => !b.earned);
+  const xpToNext = xpData?.xp?.xp_to_next ?? 0;
+  const totalXP = xpData?.xp?.total ?? 0;
+  const level = xpData?.xp?.level ?? 1;
+  const thresholds = xpData?.xp?.level_thresholds ?? [0, 100];
+  const levelStart = thresholds[level - 1] ?? 0;
+  const levelEnd = thresholds[level] ?? 100;
   const levelProgress = levelEnd > levelStart
     ? ((totalXP - levelStart) / (levelEnd - levelStart)) * 100
     : 0;
@@ -161,7 +163,7 @@ export default function ProfileScreen({ navigation }: any) {
               <Text style={styles.sectionLabel}>Kazanılan Rozetler</Text>
               <View style={styles.badgeGrid}>
                 {earnedBadges.map((b) => (
-                  <TouchableOpacity key={b.id} style={styles.badgeCard} onPress={() => {}}>
+                  <TouchableOpacity key={b.id} style={styles.badgeCard} onPress={() => { }}>
                     <View style={[styles.badgeIcon, { borderColor: TIER_COLORS[b.tier] }]}>
                       <Text style={styles.badgeEmoji}>{b.icon}</Text>
                     </View>
@@ -226,67 +228,67 @@ export default function ProfileScreen({ navigation }: any) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  content:   { padding: spacing.lg, paddingBottom: spacing['4xl'] },
-  centered:  { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  content: { padding: spacing.lg, paddingBottom: spacing['4xl'] },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
 
-  card:        { backgroundColor: colors.surface, borderRadius: radius.xl, padding: spacing.xl, marginBottom: spacing.md, ...shadows.md },
+  card: { backgroundColor: colors.surface, borderRadius: radius.xl, padding: spacing.xl, marginBottom: spacing.md, ...shadows.md },
   profileCard: { alignItems: 'center' },
-  rankCard:    { backgroundColor: colors.g800 },
+  rankCard: { backgroundColor: colors.g500 },
 
-  avatarWrap:   { position: 'relative', marginBottom: spacing.md },
-  avatar:       { width: 80, height: 80, borderRadius: 40, backgroundColor: colors.g700, justifyContent: 'center', alignItems: 'center' },
-  avatarText:   { color: '#fff', fontSize: typography.size.xl, fontWeight: '800' },
-  levelBadge:   { position: 'absolute', bottom: -4, right: -4, width: 28, height: 28, borderRadius: 14, backgroundColor: colors.g500, justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: colors.surface },
+  avatarWrap: { position: 'relative', marginBottom: spacing.md },
+  avatar: { width: 80, height: 80, borderRadius: 40, backgroundColor: colors.g500, justifyContent: 'center', alignItems: 'center' },
+  avatarText: { color: '#fff', fontSize: typography.size.xl, fontWeight: '800' },
+  levelBadge: { position: 'absolute', bottom: -4, right: -4, width: 28, height: 28, borderRadius: 14, backgroundColor: colors.g500, justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: colors.surface },
   levelBadgeText: { color: '#fff', fontSize: 11, fontWeight: '800' },
 
-  profileName:  { fontSize: typography.size.xl, fontWeight: '800', color: colors.text },
+  profileName: { fontSize: typography.size.xl, fontWeight: '800', color: colors.text },
   profileEmail: { fontSize: typography.size.xs, color: colors.textSecondary, marginTop: 2 },
-  profileRole:  { fontSize: typography.size.sm, color: colors.textSecondary, marginTop: spacing.xs },
+  profileRole: { fontSize: typography.size.sm, color: colors.textSecondary, marginTop: spacing.xs },
 
   xpSection: { width: '100%', marginTop: spacing.lg },
-  xpHeader:  { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.sm },
-  xpLabel:   { fontSize: typography.size.sm, fontWeight: '700', color: colors.text },
+  xpHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.sm },
+  xpLabel: { fontSize: typography.size.sm, fontWeight: '700', color: colors.text },
   xpNumbers: { fontSize: typography.size.xs, color: colors.textSecondary },
-  xpTrack:   { height: 10, backgroundColor: colors.g50, borderRadius: 5, overflow: 'hidden', marginBottom: spacing.xs },
-  xpFill:    { height: 10, backgroundColor: colors.g500, borderRadius: 5 },
-  xpHint:    { fontSize: typography.size.xs, color: colors.textSecondary, textAlign: 'right' },
+  xpTrack: { height: 10, backgroundColor: colors.g50, borderRadius: 5, overflow: 'hidden', marginBottom: spacing.xs },
+  xpFill: { height: 10, backgroundColor: colors.g500, borderRadius: 5 },
+  xpHint: { fontSize: typography.size.xs, color: colors.textSecondary, textAlign: 'right' },
 
   streakRow: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.md, width: '100%' },
-  streakChip:{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.xs, backgroundColor: colors.g50, borderRadius: radius.md, padding: spacing.sm },
-  streakIcon:{ fontSize: 16 },
-  streakValue:{ fontSize: typography.size.xs, fontWeight: '600', color: colors.text, flex: 1 },
+  streakChip: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.xs, backgroundColor: colors.g50, borderRadius: radius.md, padding: spacing.sm },
+  streakIcon: { fontSize: 16 },
+  streakValue: { fontSize: typography.size.xs, fontWeight: '600', color: colors.text, flex: 1 },
 
-  editBtn:     { marginTop: spacing.lg, borderWidth: 1, borderColor: colors.border, borderRadius: radius.md, paddingHorizontal: spacing.lg, paddingVertical: spacing.sm },
+  editBtn: { marginTop: spacing.lg, borderWidth: 1, borderColor: colors.border, borderRadius: radius.md, paddingHorizontal: spacing.lg, paddingVertical: spacing.sm },
   editBtnText: { fontSize: typography.size.sm, color: colors.textSecondary, fontWeight: '600' },
 
   rankLabel: { fontSize: typography.size.xs, color: colors.g300, marginBottom: spacing.sm },
-  rankRow:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  rankNumber:{ fontSize: typography.size['3xl'], fontWeight: '800', color: '#fff' },
-  rankCo2:   { fontSize: typography.size.base, fontWeight: '700', color: '#fff' },
-  rankSub:   { fontSize: typography.size.xs, color: colors.g300 },
-  rankLink:  { fontSize: typography.size.xs, color: colors.g300, fontWeight: '600' },
+  rankRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  rankNumber: { fontSize: typography.size['3xl'], fontWeight: '800', color: '#fff' },
+  rankCo2: { fontSize: typography.size.base, fontWeight: '700', color: '#fff' },
+  rankSub: { fontSize: typography.size.xs, color: colors.g300 },
+  rankLink: { fontSize: typography.size.xs, color: colors.g300, fontWeight: '600' },
 
-  tabRow:   { flexDirection: 'row', backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.xs, marginBottom: spacing.lg, ...shadows.sm },
-  tab:      { flex: 1, paddingVertical: spacing.sm, alignItems: 'center', borderRadius: radius.md },
-  tabActive:{ backgroundColor: colors.g700 },
-  tabText:  { fontSize: typography.size.xs, fontWeight: '600', color: colors.textSecondary },
+  tabRow: { flexDirection: 'row', backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.xs, marginBottom: spacing.lg, ...shadows.sm },
+  tab: { flex: 1, paddingVertical: spacing.sm, alignItems: 'center', borderRadius: radius.md },
+  tabActive: { backgroundColor: colors.g500 },
+  tabText: { fontSize: typography.size.xs, fontWeight: '600', color: colors.textSecondary },
   tabTextActive: { color: '#fff' },
 
   sectionLabel: { fontSize: typography.size.sm, fontWeight: '700', color: colors.text, marginBottom: spacing.md },
 
-  badgeGrid:      { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginBottom: spacing.lg },
-  badgeCard:      { width: '30%', alignItems: 'center', gap: spacing.xs },
-  badgeCardLocked:{ opacity: 0.6 },
-  badgeIcon:      { width: 56, height: 56, borderRadius: 28, borderWidth: 2, borderColor: colors.g400, backgroundColor: colors.g50, justifyContent: 'center', alignItems: 'center' },
-  badgeIconLocked:{ borderColor: colors.border, backgroundColor: colors.background },
-  badgeEmoji:     { fontSize: 24 },
-  badgeName:      { fontSize: typography.size.xs, fontWeight: '600', color: colors.text, textAlign: 'center' },
-  badgeTier:      { fontSize: 9, fontWeight: '700' },
-  badgeXP:        { fontSize: 9, color: colors.textMuted },
+  badgeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginBottom: spacing.lg },
+  badgeCard: { width: '30%', alignItems: 'center', gap: spacing.xs },
+  badgeCardLocked: { opacity: 0.6 },
+  badgeIcon: { width: 56, height: 56, borderRadius: 28, borderWidth: 2, borderColor: colors.g400, backgroundColor: colors.g50, justifyContent: 'center', alignItems: 'center' },
+  badgeIconLocked: { borderColor: colors.border, backgroundColor: colors.background },
+  badgeEmoji: { fontSize: 24 },
+  badgeName: { fontSize: typography.size.xs, fontWeight: '600', color: colors.text, textAlign: 'center' },
+  badgeTier: { fontSize: 9, fontWeight: '700' },
+  badgeXP: { fontSize: 9, color: colors.textMuted },
 
   statsCard: { backgroundColor: colors.surface, borderRadius: radius.lg, ...shadows.sm, overflow: 'hidden' },
-  statRow:   { flexDirection: 'row', alignItems: 'center', gap: spacing.md, padding: spacing.lg, borderBottomWidth: 1, borderBottomColor: colors.g50 },
-  statIcon:  { fontSize: 20, width: 28 },
+  statRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, padding: spacing.lg, borderBottomWidth: 1, borderBottomColor: colors.g50 },
+  statIcon: { fontSize: 20, width: 28 },
   statLabel: { flex: 1, fontSize: typography.size.base, color: colors.text },
-  statValue: { fontSize: typography.size.base, fontWeight: '700', color: colors.g700 },
+  statValue: { fontSize: typography.size.base, fontWeight: '700', color: colors.g500 },
 });

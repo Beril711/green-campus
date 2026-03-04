@@ -1,36 +1,22 @@
-// src/store/slices/authSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import * as SecureStore from 'expo-secure-store';
 import api from '../../services/api';
-
-interface User {
-  id:         number;
-  email:      string;
-  first_name: string;
-  last_name:  string;
-  full_name:  string;
-  role:       string;
-  profile?: {
-    daily_carbon_goal: number;
-    notify_daily:      boolean;
-    is_public:         boolean;
-  };
-}
+import type { User } from '../../types';
 
 interface AuthState {
-  user:         User | null;
-  accessToken:  string | null;
+  user: User | null;
+  accessToken: string | null;
   refreshToken: string | null;
-  isLoading:    boolean;
-  error:        string | null;
+  isLoading: boolean;
+  error: string | null;
 }
 
 const initialState: AuthState = {
-  user:         null,
-  accessToken:  null,
+  user: null,
+  accessToken: null,
   refreshToken: null,
-  isLoading:    false,
-  error:        null,
+  isLoading: false,
+  error: null,
 };
 
 // ── ASYNC THUNKS ──────────────────────────────────────────────────────────────
@@ -43,7 +29,18 @@ export const register = createAsyncThunk(
       await _saveTokens(res.data.tokens.access, res.data.tokens.refresh);
       return res.data;
     } catch (err: any) {
-      return rejectWithValue(err.response?.data || 'Kayıt başarısız');
+      const errorData = err.response?.data;
+      // Backend validation hatalarını okunabilir mesaja çevir
+      if (errorData && typeof errorData === 'object') {
+        const messages = Object.entries(errorData)
+          .map(([field, errors]) => {
+            const errorList = Array.isArray(errors) ? errors.join(', ') : String(errors);
+            return `${field}: ${errorList}`;
+          })
+          .join('\n');
+        return rejectWithValue(messages || 'Kayıt başarısız');
+      }
+      return rejectWithValue(typeof errorData === 'string' ? errorData : 'Kayıt başarısız');
     }
   }
 );
@@ -82,7 +79,7 @@ export const loadStoredAuth = createAsyncThunk(
   'auth/loadStored',
   async (_, { rejectWithValue }) => {
     try {
-      const accessToken  = await SecureStore.getItemAsync('accessToken');
+      const accessToken = await SecureStore.getItemAsync('accessToken');
       const refreshToken = await SecureStore.getItemAsync('refreshToken');
       if (!accessToken || !refreshToken) return null;
 
@@ -107,28 +104,28 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     clearError: (state) => { state.error = null; },
-    setUser:    (state, action: PayloadAction<User>) => { state.user = action.payload; },
+    setUser: (state, action: PayloadAction<User>) => { state.user = action.payload; },
   },
   extraReducers: (builder) => {
     // Register
-    builder.addCase(register.pending,   (s) => { s.isLoading = true; s.error = null; });
+    builder.addCase(register.pending, (s) => { s.isLoading = true; s.error = null; });
     builder.addCase(register.fulfilled, (s, a) => {
-      s.isLoading    = false;
-      s.user         = a.payload.user;
-      s.accessToken  = a.payload.tokens.access;
+      s.isLoading = false;
+      s.user = a.payload.user;
+      s.accessToken = a.payload.tokens.access;
       s.refreshToken = a.payload.tokens.refresh;
     });
-    builder.addCase(register.rejected,  (s, a) => { s.isLoading = false; s.error = String(a.payload); });
+    builder.addCase(register.rejected, (s, a) => { s.isLoading = false; s.error = String(a.payload); });
 
     // Login
-    builder.addCase(login.pending,   (s) => { s.isLoading = true; s.error = null; });
+    builder.addCase(login.pending, (s) => { s.isLoading = true; s.error = null; });
     builder.addCase(login.fulfilled, (s, a) => {
-      s.isLoading    = false;
-      s.user         = a.payload.user;
-      s.accessToken  = a.payload.tokens.access;
+      s.isLoading = false;
+      s.user = a.payload.user;
+      s.accessToken = a.payload.tokens.access;
       s.refreshToken = a.payload.tokens.refresh;
     });
-    builder.addCase(login.rejected,  (s, a) => { s.isLoading = false; s.error = String(a.payload); });
+    builder.addCase(login.rejected, (s, a) => { s.isLoading = false; s.error = String(a.payload); });
 
     // Logout
     builder.addCase(logout.fulfilled, (s) => {
@@ -138,8 +135,8 @@ const authSlice = createSlice({
     // Load stored
     builder.addCase(loadStoredAuth.fulfilled, (s, a) => {
       if (a.payload) {
-        s.user         = a.payload.user;
-        s.accessToken  = a.payload.accessToken;
+        s.user = a.payload.user;
+        s.accessToken = a.payload.accessToken;
         s.refreshToken = a.payload.refreshToken;
       }
     });

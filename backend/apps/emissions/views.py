@@ -56,13 +56,24 @@ class EmissionEntryListCreateView(generics.ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
         if response.status_code == status.HTTP_201_CREATED:
-            self._trigger_gamification(request.user, response.data)
+            # Gamification'ı arka planda çalıştır, response'u bloklamasın
+            import threading
+            threading.Thread(
+                target=self._trigger_gamification,
+                args=(request.user, dict(response.data)),
+                daemon=True
+            ).start()
         return response
 
     def _trigger_gamification(self, user, entry_data):
-        """Giriş sonrası XP ve streak güncelle."""
-        from apps.gamification.tasks import process_entry_rewards
-        process_entry_rewards.delay(user.id, entry_data['date'])
+        """Giriş sonrası XP ve streak güncelle (arka planda)."""
+        try:
+            from apps.gamification.tasks import process_entry_rewards
+            process_entry_rewards.delay(user.id, entry_data['date'])
+        except Exception as e:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.warning(f'Gamification tetiklenemedi (Redis/Celery bağlantısı yok olabilir): {e}')
 
 
 class EmissionEntryDetailView(generics.RetrieveUpdateDestroyAPIView):

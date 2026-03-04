@@ -6,7 +6,7 @@ const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8000/api/v
 
 const api = axios.create({
   baseURL: BASE_URL,
-  timeout: 10000,
+  timeout: 30000,
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -29,7 +29,7 @@ let failedQueue: Array<{ resolve: Function; reject: Function }> = [];
 const processQueue = (error: any, token: string | null = null) => {
   failedQueue.forEach((prom) => {
     if (error) { prom.reject(error); }
-    else        { prom.resolve(token); }
+    else { prom.resolve(token); }
   });
   failedQueue = [];
 };

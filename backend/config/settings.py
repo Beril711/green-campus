@@ -191,3 +191,52 @@ ALLOWED_UNIVERSITY_DOMAINS = ['ahievran.edu.tr', 'edu.tr']
 
 # ── FCM ───────────────────────────────────────────────────────────────────────
 FCM_SERVER_KEY = env('FCM_SERVER_KEY', default='')
+
+# ── LOGLAMA ──────────────────────────────────────────────────────────────────
+import os
+LOG_DIR = BASE_DIR / 'logs'
+os.makedirs(LOG_DIR, exist_ok=True)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[{asctime}] {levelname} {name} {module}.{funcName}:{lineno} — {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '[{asctime}] {levelname} — {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': str(LOG_DIR / 'debug.log'),
+            'formatter': 'verbose',
+            'encoding': 'utf-8',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'apps': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}

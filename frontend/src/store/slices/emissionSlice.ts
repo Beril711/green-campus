@@ -1,36 +1,12 @@
-// src/store/slices/emissionSlice.ts
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../services/api';
-
-interface EmissionEntry {
-  id: string;
-  factor: number;
-  factor_name: string;
-  category_slug: string;
-  category_icon: string;
-  quantity: number;
-  unit: string;
-  co2_kg: number;
-  note: string;
-  date: string;
-  created_at: string;
-}
-
-interface TodaySummary {
-  date: string;
-  total_co2: number;
-  entry_count: number;
-  daily_goal: number;
-  goal_achieved: boolean;
-  remaining: number;
-  by_category: Record<string, number>;
-}
+import type { EmissionEntry, TodaySummary, EmissionCategory, EmissionFactor } from '../../types';
 
 interface EmissionState {
   entries: EmissionEntry[];
   todaySummary: TodaySummary | null;
-  categories: any[];
-  factors: any[];
+  categories: EmissionCategory[];
+  factors: EmissionFactor[];
   isLoading: boolean;
   isSubmitting: boolean;
   error: string | null;

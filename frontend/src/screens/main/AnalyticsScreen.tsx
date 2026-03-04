@@ -1,23 +1,23 @@
-// src/screens/main/AnalyticsScreen.tsx
 import React, { useEffect, useState } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, Dimensions,
-  TouchableOpacity, ActivityIndicator,
+  TouchableOpacity, ActivityIndicator, Alert,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
 import { colors, spacing, radius, typography, shadows, getCategoryColor, getCategoryIcon } from '../../theme';
 import api from '../../services/api';
+import type { WeeklyDayData, TrendData, BudgetData } from '../../types';
 
 const { width } = Dimensions.get('window');
 const CHART_HEIGHT = 160;
 const CATEGORIES = ['transport', 'energy', 'food', 'waste', 'water', 'digital'];
 
 export default function AnalyticsScreen() {
-  const [weeklyData,   setWeeklyData]   = useState<any[]>([]);
-  const [trend,        setTrend]        = useState<any>(null);
-  const [budget,       setBudget]       = useState<any>(null);
-  const [loading,      setLoading]      = useState(true);
+  const [weeklyData, setWeeklyData] = useState<WeeklyDayData[]>([]);
+  const [trend, setTrend] = useState<TrendData | null>(null);
+  const [budget, setBudget] = useState<BudgetData | null>(null);
+  const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
   useEffect(() => {
@@ -34,7 +34,9 @@ export default function AnalyticsScreen() {
       setWeeklyData(wRes.data);
       setTrend(tRes.data);
       // Bütçe opsiyonel
-      api.get('/analytics/budget/').then(r => setBudget(r.data)).catch(() => {});
+      api.get('/analytics/budget/').then(r => setBudget(r.data)).catch(() => { });
+    } catch (err) {
+      Alert.alert('Hata', 'Analiz verileri yüklenirken bir sorun oluştu.');
     } finally {
       setLoading(false);
     }
@@ -84,7 +86,7 @@ export default function AnalyticsScreen() {
         <View style={styles.chart}>
           {weeklyData.map((day, i) => {
             const cats = activeCategory ? [activeCategory] : CATEGORIES;
-            const total = cats.reduce((sum, c) => sum + (day[c] ?? 0), 0);
+            const total = cats.reduce((sum, c) => sum + (Number(day[c]) || 0), 0);
             const heightPct = total / maxCO2;
 
             return (
@@ -95,7 +97,8 @@ export default function AnalyticsScreen() {
                   {!activeCategory ? (
                     <View style={[styles.stackedBar, { height: heightPct * CHART_HEIGHT }]}>
                       {CATEGORIES.map((cat, ci) => {
-                        const catPct = day[cat] > 0 ? day[cat] / total : 0;
+                        const catVal = Number(day[cat]) || 0;
+                        const catPct = catVal > 0 ? catVal / total : 0;
                         return (
                           <View
                             key={cat}
@@ -204,14 +207,14 @@ export default function AnalyticsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  content:   { padding: spacing.lg, paddingBottom: spacing['4xl'] },
-  centered:  { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  content: { padding: spacing.lg, paddingBottom: spacing['4xl'] },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
 
-  card:        { backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg, marginBottom: spacing.md, ...shadows.sm },
+  card: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg, marginBottom: spacing.md, ...shadows.sm },
   cardWarning: { borderWidth: 2, borderColor: colors.error },
-  cardHeader:  { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md },
-  cardTitle:   { fontSize: typography.size.base, fontWeight: '700', color: colors.text },
-  cardSub:     { fontSize: typography.size.xs, color: colors.textSecondary },
+  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md },
+  cardTitle: { fontSize: typography.size.base, fontWeight: '700', color: colors.text },
+  cardSub: { fontSize: typography.size.xs, color: colors.textSecondary },
 
   catFilter: { marginBottom: spacing.md },
   catChip: {
@@ -220,43 +223,43 @@ const styles = StyleSheet.create({
     borderColor: colors.border, backgroundColor: colors.surface,
     marginRight: spacing.sm,
   },
-  catChipActive:     { borderColor: colors.g600, backgroundColor: colors.g50 },
-  catChipText:       { fontSize: typography.size.xs, color: colors.textSecondary },
+  catChipActive: { borderColor: colors.g600, backgroundColor: colors.g50 },
+  catChipText: { fontSize: typography.size.xs, color: colors.textSecondary },
   catChipTextActive: { color: colors.g800, fontWeight: '700' },
 
-  chart:    { flexDirection: 'row', alignItems: 'flex-end', gap: spacing.xs, marginBottom: spacing.md },
-  barCol:   { alignItems: 'center', gap: spacing.xs },
+  chart: { flexDirection: 'row', alignItems: 'flex-end', gap: spacing.xs, marginBottom: spacing.md },
+  barCol: { alignItems: 'center', gap: spacing.xs },
   barValue: { fontSize: 9, color: colors.textSecondary, height: 14 },
   barTrack: { width: '100%', justifyContent: 'flex-end', backgroundColor: colors.g50, borderRadius: radius.sm, overflow: 'hidden' },
-  stackedBar:  { width: '100%', borderRadius: radius.sm, overflow: 'hidden', flexDirection: 'column-reverse' },
-  stackSegment:{ minHeight: 2 },
-  singleBar:   { width: '100%', borderRadius: radius.sm },
-  barDay:      { fontSize: 9, color: colors.textSecondary },
+  stackedBar: { width: '100%', borderRadius: radius.sm, overflow: 'hidden', flexDirection: 'column-reverse' },
+  stackSegment: { minHeight: 2 },
+  singleBar: { width: '100%', borderRadius: radius.sm },
+  barDay: { fontSize: 9, color: colors.textSecondary },
 
   legend: { flexDirection: 'row', justifyContent: 'center', gap: spacing.md, marginTop: spacing.sm },
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
-  legendDot:  { width: 8, height: 8, borderRadius: 4 },
+  legendDot: { width: 8, height: 8, borderRadius: 4 },
   legendText: { fontSize: typography.size.xs, color: colors.textSecondary },
 
-  trendRow:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: spacing.md },
-  trendBox:      { alignItems: 'center' },
-  trendLabel:    { fontSize: typography.size.xs, color: colors.textSecondary, marginBottom: spacing.xs },
-  trendValue:    { fontSize: typography.size.xl, fontWeight: '800', color: colors.text },
-  trendUnit:     { fontSize: typography.size.xs, color: colors.textSecondary },
-  trendArrow:    { alignItems: 'center' },
-  trendPct:      { fontSize: typography.size.lg, fontWeight: '700' },
-  trendDetail:   { marginTop: spacing.md, padding: spacing.sm, backgroundColor: colors.g50, borderRadius: radius.sm },
-  trendDetailText:{ fontSize: typography.size.xs, color: colors.textSecondary, textAlign: 'center' },
+  trendRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: spacing.md },
+  trendBox: { alignItems: 'center' },
+  trendLabel: { fontSize: typography.size.xs, color: colors.textSecondary, marginBottom: spacing.xs },
+  trendValue: { fontSize: typography.size.xl, fontWeight: '800', color: colors.text },
+  trendUnit: { fontSize: typography.size.xs, color: colors.textSecondary },
+  trendArrow: { alignItems: 'center' },
+  trendPct: { fontSize: typography.size.lg, fontWeight: '700' },
+  trendDetail: { marginTop: spacing.md, padding: spacing.sm, backgroundColor: colors.g50, borderRadius: radius.sm },
+  trendDetailText: { fontSize: typography.size.xs, color: colors.textSecondary, textAlign: 'center' },
 
-  budgetRow:    { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: spacing.md },
-  budgetMain:   { fontSize: typography.size.xl, fontWeight: '800', color: colors.text },
-  budgetSub:    { fontSize: typography.size.xs, color: colors.textSecondary },
+  budgetRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: spacing.md },
+  budgetMain: { fontSize: typography.size.xl, fontWeight: '800', color: colors.text },
+  budgetSub: { fontSize: typography.size.xs, color: colors.textSecondary },
   budgetPctCircle: {
     width: 56, height: 56, borderRadius: 28,
     backgroundColor: colors.g800, justifyContent: 'center', alignItems: 'center',
   },
-  budgetPct:    { color: '#fff', fontWeight: '800', fontSize: typography.size.sm },
-  budgetTrack:  { height: 10, backgroundColor: colors.g50, borderRadius: 5, marginTop: spacing.md, overflow: 'hidden' },
-  budgetFill:   { height: 10, borderRadius: 5 },
+  budgetPct: { color: '#fff', fontWeight: '800', fontSize: typography.size.sm },
+  budgetTrack: { height: 10, backgroundColor: colors.g50, borderRadius: 5, marginTop: spacing.md, overflow: 'hidden' },
+  budgetFill: { height: 10, borderRadius: 5 },
   exceededWarning: { color: colors.error, fontSize: typography.size.sm, marginTop: spacing.sm, fontWeight: '600' },
 });

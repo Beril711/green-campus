@@ -7,6 +7,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from django.contrib.auth import get_user_model
 from .serializers import RegisterSerializer, UserSerializer, UpdateProfileSerializer, FCMTokenSerializer
+import logging
+
+logger = logging.getLogger('apps.users')
 
 User = get_user_model()
 
@@ -18,9 +21,20 @@ class RegisterView(generics.CreateAPIView):
 
     @extend_schema(summary='Kullanıcı Kaydı', tags=['Auth'])
     def post(self, request, *args, **kwargs):
+        logger.info(f"[REGISTER] İstek geldi — data keys: {list(request.data.keys())}")
+        logger.debug(f"[REGISTER] İstek detayı — email: {request.data.get('email', 'YOK')}")
+
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
+        if not serializer.is_valid():
+            logger.warning(f"[REGISTER] Validasyon hatası: {serializer.errors}")
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = serializer.save()
+            logger.info(f"[REGISTER] ✅ Kullanıcı oluşturuldu — {user.email} (id={user.id})")
+        except Exception as e:
+            logger.error(f"[REGISTER] ❌ Kayıt hatası: {str(e)}", exc_info=True)
+            return Response({'detail': f'Kayıt sırasında hata oluştu: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         # Kayıt sonrası token üret
         refresh = RefreshToken.for_user(user)

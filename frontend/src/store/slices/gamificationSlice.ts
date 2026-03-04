@@ -1,21 +1,21 @@
-// src/store/slices/gamificationSlice.ts
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../services/api';
+import type { XPData, StreakData, Badge, LeaderboardData } from '../../types';
 
 interface GamificationState {
-  xp:     { total: number; level: number; xp_to_next: number } | null;
-  streak: { current: number; longest: number; last_entry: string | null } | null;
-  badges: any[];
-  leaderboard: { top10: any[]; my_rank: number | null; my_co2: number | null } | null;
+  xp: XPData | null;
+  streak: StreakData | null;
+  badges: Badge[];
+  leaderboard: LeaderboardData | null;
   isLoading: boolean;
 }
 
 const initialState: GamificationState = {
-  xp:          null,
-  streak:      null,
-  badges:      [],
+  xp: null,
+  streak: null,
+  badges: [],
   leaderboard: null,
-  isLoading:   false,
+  isLoading: false,
 };
 
 export const fetchGamificationStatus = createAsyncThunk(
@@ -47,14 +47,14 @@ const gamificationSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(fetchGamificationStatus.pending,   (s) => { s.isLoading = true; });
+    builder.addCase(fetchGamificationStatus.pending, (s) => { s.isLoading = true; });
     builder.addCase(fetchGamificationStatus.fulfilled, (s, a) => {
       s.isLoading = false;
-      s.xp        = a.payload.xp;
-      s.streak    = a.payload.streak;
+      s.xp = a.payload.xp;
+      s.streak = a.payload.streak;
     });
-    builder.addCase(fetchGamificationStatus.rejected,  (s) => { s.isLoading = false; });
-    builder.addCase(fetchBadges.fulfilled,      (s, a) => { s.badges      = a.payload; });
+    builder.addCase(fetchGamificationStatus.rejected, (s) => { s.isLoading = false; });
+    builder.addCase(fetchBadges.fulfilled, (s, a) => { s.badges = a.payload; });
     builder.addCase(fetchLeaderboard.fulfilled, (s, a) => { s.leaderboard = a.payload; });
   },
 });

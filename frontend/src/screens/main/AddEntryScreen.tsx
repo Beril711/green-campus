@@ -1,30 +1,44 @@
-// src/screens/main/AddEntryScreen.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { addEntry, fetchCategories, fetchFactors, fetchTodaySummary } from '../../store/slices/emissionSlice';
 import {
   View, Text, TouchableOpacity, ScrollView,
   TextInput, StyleSheet, ActivityIndicator, Alert,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { useFocusEffect } from '@react-navigation/native';
 import { AppDispatch, RootState } from '../../store';
 import { colors, spacing, radius, typography, shadows, getCategoryColor, getCategoryIcon } from '../../theme';
 import { format } from 'date-fns';
+import type { EmissionFactor } from '../../types';
 
 type Step = 'category' | 'factor' | 'quantity';
 
-export default function AddEntryScreen({ navigation, route }: any) {
+interface Props {
+  navigation: { goBack: () => void; navigate: (screen: string, params?: Record<string, unknown>) => void };
+  route: { params?: { category?: string } };
+}
+
+export default function AddEntryScreen({ navigation, route }: Props) {
   const dispatch = useDispatch<AppDispatch>();
   const { categories, factors, isSubmitting } = useSelector((s: RootState) => s.emissions);
 
   const [step, setStep] = useState<Step>('category');
   const [selectedCategory, setCategory] = useState<string>(route.params?.category ?? '');
-  const [selectedFactor, setFactor] = useState<any>(null);
+  const [selectedFactor, setFactor] = useState<EmissionFactor | null>(null);
   const [quantity, setQuantity] = useState('');
   const [note, setNote] = useState('');
 
-  useEffect(() => {
-    dispatch(fetchCategories());
-  }, []);
+  // Her odaklanmada formu sıfırla (+ butonuna her basıldığında kategori seçimine dön)
+  useFocusEffect(
+    useCallback(() => {
+      setStep('category');
+      setCategory(route.params?.category ?? '');
+      setFactor(null);
+      setQuantity('');
+      setNote('');
+      dispatch(fetchCategories());
+    }, [])
+  );
 
   useEffect(() => {
     if (selectedCategory) {
@@ -53,12 +67,14 @@ export default function AddEntryScreen({ navigation, route }: any) {
     }));
 
     if (addEntry.fulfilled.match(result)) {
-      dispatch(fetchTodaySummary()); // bunu ekle
+      dispatch(fetchTodaySummary());
       Alert.alert(
         '✅ Kaydedildi',
         `${selectedFactor.name_tr}: ${result.payload.co2_kg} kg CO₂`,
         [{ text: 'Tamam', onPress: () => navigation.goBack() }]
       );
+    } else {
+      Alert.alert('Hata', 'Kayıt başarısız oldu. Lütfen tekrar deneyin.');
     }
   };
 
@@ -180,40 +196,82 @@ export default function AddEntryScreen({ navigation, route }: any) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  stepBar: { flexDirection: 'row', justifyContent: 'center', gap: spacing['3xl'], padding: spacing.lg, backgroundColor: colors.surface, borderBottomWidth: 1, borderBottomColor: colors.border },
-  stepItem: { alignItems: 'center', gap: 4 },
-  stepDot: { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.g100, justifyContent: 'center', alignItems: 'center' },
-  stepDotActive: { backgroundColor: colors.g700 },
-  stepDotDone: { backgroundColor: colors.g500 },
-  stepNum: { fontSize: 12, fontWeight: '700', color: '#fff' },
-  stepLabel: { fontSize: typography.size.xs, color: colors.textSecondary },
 
+  // ── Step Bar ──
+  stepBar: {
+    flexDirection: 'row', justifyContent: 'center', gap: spacing['3xl'],
+    padding: spacing.lg, backgroundColor: colors.surface,
+    borderBottomWidth: 1, borderBottomColor: colors.border,
+  },
+  stepItem: { alignItems: 'center', gap: 4 },
+  stepDot: {
+    width: 32, height: 32, borderRadius: 16,
+    backgroundColor: '#E8E9EE', justifyContent: 'center', alignItems: 'center',
+  },
+  stepDotActive: { backgroundColor: colors.g500 },
+  stepDotDone: { backgroundColor: colors.g400 },
+  stepNum: { fontSize: 13, fontWeight: '700', color: '#fff' },
+  stepLabel: { fontSize: typography.size.xs, color: colors.textSecondary, fontWeight: '500' },
+
+  // ── Content ──
   content: { padding: spacing.lg, paddingBottom: 100 },
   stepTitle: { fontSize: typography.size.xl, fontWeight: '700', color: colors.text, marginBottom: spacing.lg },
-  back: { color: colors.g700, fontWeight: '600', marginBottom: spacing.lg },
+  back: { color: colors.g500, fontWeight: '700', marginBottom: spacing.lg, fontSize: typography.size.base },
 
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
-  catCard: { width: '30%', aspectRatio: 1, borderRadius: radius.lg, backgroundColor: colors.surface, justifyContent: 'center', alignItems: 'center', borderWidth: 2, ...shadows.sm },
-  catCardIcon: { fontSize: 28 },
-  catCardName: { fontSize: typography.size.xs, fontWeight: '600', color: colors.text, marginTop: 4, textAlign: 'center' },
+  // ── Kategori Grid ──
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, justifyContent: 'space-between' },
+  catCard: {
+    width: '30%', aspectRatio: 0.95, borderRadius: radius.xl,
+    backgroundColor: colors.surface, justifyContent: 'center', alignItems: 'center',
+    borderWidth: 2, ...shadows.sm, paddingVertical: spacing.md,
+  },
+  catCardIcon: { fontSize: 36, marginBottom: 6 },
+  catCardName: { fontSize: typography.size.sm, fontWeight: '700', color: colors.text, textAlign: 'center' },
 
-  factorRow: { backgroundColor: colors.surface, borderRadius: radius.md, padding: spacing.md, marginBottom: spacing.sm, flexDirection: 'row', alignItems: 'center', ...shadows.sm },
-  factorRowSelected: { borderWidth: 2, borderColor: colors.g500 },
-  factorName: { fontSize: typography.size.base, fontWeight: '600', color: colors.text },
-  factorMeta: { fontSize: typography.size.xs, color: colors.textSecondary, marginTop: 2 },
+  // ── Faktör Listesi ──
+  factorRow: {
+    backgroundColor: colors.surface, borderRadius: radius.lg,
+    padding: spacing.lg, marginBottom: spacing.sm,
+    flexDirection: 'row', alignItems: 'center',
+    borderLeftWidth: 3, borderLeftColor: colors.g100,
+    ...shadows.sm,
+  },
+  factorRowSelected: { borderLeftColor: colors.g500, backgroundColor: '#F0FFF0' },
+  factorName: { fontSize: typography.size.base, fontWeight: '700', color: colors.text },
+  factorMeta: { fontSize: typography.size.xs, color: colors.textSecondary, marginTop: 3 },
 
-  selectedInfo: { backgroundColor: colors.g50, borderRadius: radius.md, padding: spacing.md, marginBottom: spacing.lg },
-  selectedName: { fontSize: typography.size.base, fontWeight: '700', color: colors.g800 },
+  // ── Seçili Bilgi ──
+  selectedInfo: {
+    backgroundColor: '#F0FFF0', borderRadius: radius.lg,
+    padding: spacing.lg, marginBottom: spacing.lg,
+    borderLeftWidth: 3, borderLeftColor: colors.g500,
+  },
+  selectedName: { fontSize: typography.size.base, fontWeight: '700', color: colors.g500 },
   selectedMeta: { fontSize: typography.size.xs, color: colors.textSecondary, marginTop: 2 },
 
+  // ── Input ──
   inputLabel: { fontSize: typography.size.sm, fontWeight: '600', color: colors.text, marginBottom: spacing.sm },
-  input: { backgroundColor: colors.surface, borderRadius: radius.md, borderWidth: 1, borderColor: colors.border, padding: spacing.md, fontSize: typography.size.base, color: colors.text, marginBottom: spacing.lg },
+  input: {
+    backgroundColor: colors.surface, borderRadius: radius.lg,
+    borderWidth: 1.5, borderColor: colors.border,
+    padding: spacing.lg, fontSize: typography.size.base,
+    color: colors.text, marginBottom: spacing.lg,
+  },
 
-  preview: { backgroundColor: colors.g800, borderRadius: radius.md, padding: spacing.md, marginBottom: spacing.lg, alignItems: 'center' },
-  previewLabel: { fontSize: typography.size.xs, color: colors.g300 },
-  previewValue: { fontSize: typography.size['2xl'], fontWeight: '800', color: '#fff', marginTop: 2 },
+  // ── CO2 Önizleme ──
+  preview: {
+    backgroundColor: colors.g500, borderRadius: radius.lg,
+    padding: spacing.lg, marginBottom: spacing.lg, alignItems: 'center',
+  },
+  previewLabel: { fontSize: typography.size.xs, color: 'rgba(255,255,255,0.75)', fontWeight: '500' },
+  previewValue: { fontSize: typography.size['2xl'], fontWeight: '800', color: '#fff', marginTop: 4 },
 
-  submitBtn: { backgroundColor: colors.g700, borderRadius: radius.lg, padding: spacing.lg, alignItems: 'center', marginTop: spacing.md },
+  // ── Submit ──
+  submitBtn: {
+    backgroundColor: colors.g500, borderRadius: radius.lg,
+    padding: spacing.lg, alignItems: 'center', marginTop: spacing.md,
+    ...shadows.sm,
+  },
   submitBtnDisabled: { opacity: 0.5 },
   submitBtnText: { color: '#fff', fontSize: typography.size.base, fontWeight: '700' },
 });
